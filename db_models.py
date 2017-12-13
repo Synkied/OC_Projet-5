@@ -1,7 +1,10 @@
 from peewee import *
 
 
-database = MySQLDatabase('openfoodfacts_oc', **{'user': "quentin", 'password': "openffoc"})
+database = MySQLDatabase(
+    'openfoodfacts_oc',
+    **{'user': "quentin", 'password': "openffoc"}
+)
 
 
 class BaseModel(Model):
@@ -34,9 +37,13 @@ class Stores(BaseModel):
 
 class Products(BaseModel):
     id = IntegerField(unique=True)
-    brand = ForeignKeyField(db_column='brand_id', rel_model=Brands, to_field='id')
+    brand = ForeignKeyField(
+        db_column='brand_id', rel_model=Brands, to_field='id'
+    )
     carbs = FloatField(null=True)
-    cat = ForeignKeyField(db_column='cat_id', rel_model=Categories, to_field='id')
+    cat = ForeignKeyField(
+        db_column='cat_id', rel_model=Categories, to_field='id'
+    )
     energy = IntegerField(null=True)
     fat = FloatField(null=True)
     fibers = FloatField(null=True)
@@ -44,7 +51,9 @@ class Products(BaseModel):
     nutri_grade = CharField(null=True)
     proteins = FloatField(null=True)
     salt = FloatField(null=True)
-    store = ForeignKeyField(db_column='store_id', rel_model=Stores, to_field='id')
+    store = ForeignKeyField(
+        db_column='store_id', rel_model=Stores, to_field='id'
+    )
     sugars = FloatField(null=True)
     traces = CharField(null=True)
 
@@ -58,8 +67,13 @@ class Products(BaseModel):
 
 class Favorites(BaseModel):
     id = IntegerField(unique=True)
-    product = ForeignKeyField(db_column='product_id', rel_model=Products, to_field='id')
-    substitute = ForeignKeyField(db_column='substitute_id', rel_model=Products, related_name='products_substitute_set', to_field='id')
+    product = ForeignKeyField(
+        db_column='product_id', rel_model=Products, to_field='id'
+    )
+    substitute = ForeignKeyField(
+        db_column='substitute_id', rel_model=Products,
+        related_name='products_substitute_set', to_field='id'
+    )
 
     class Meta:
         db_table = 'favorites'
