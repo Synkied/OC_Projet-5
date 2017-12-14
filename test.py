@@ -13,13 +13,15 @@ def test_csv(file, headers):
     # defines a dataframe, from the passed headers
     df = csv_file[headers]
 
+
     new_df = list(df["stores"].unique())
-    t = [i.split(",") for i in new_df if type(i) is not float]
-    b = set()
-    for i in t:
-        for j in i:
-            b.add(j.strip().capitalize())
-    print(b)
+    print(new_df)
+    # t = [i.split(",") for i in new_df if type(i) is not float]
+    # b = set()
+    # for i in t:
+    #     for j in i:
+    #         b.add(j.strip().capitalize())
+    # print(b)
 
 
 fname = "db_file.csv"
