@@ -4,6 +4,7 @@ import pandas as pd
 class CSVCleaner():
 
     # #TODO: RAISE ERRORS
+    # code: puissances
 
     def __init__(self, file_name):
         self.file_name = file_name
@@ -35,11 +36,12 @@ class CSVCleaner():
         ]
 
         # save the new file to a csv file, with the name "db_file.csv"
-        new_f.to_csv("db_file.csv", index=False, encoding="Latin-1", sep=";")
+        new_f.to_csv("db_file.csv", index=False, encoding="utf-8", sep=";")
 
 
 headers_list = [
-    "code", "url",
+    "code",
+    "url",
     "product_name",
     "brands",
     "stores",
@@ -60,7 +62,7 @@ headers_list = [
 categories_list = [
     'Petit-déjeuners',
     'Chips et frites',
-    'Soupes'
+    'Soupes',
     'Biscuits',
     'Jus de fruits 100% pur jus',
     'Jus de pomme',

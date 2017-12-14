@@ -10,4 +10,5 @@ class Menu():
         pass
 
     def display(self):
+        # nb_elm/pgs
         pass
