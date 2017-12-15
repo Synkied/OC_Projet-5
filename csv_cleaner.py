@@ -23,16 +23,18 @@ class CSVCleaner():
         # sep: csv file's separator
         # low_memory: avoiding unnecessary warning msgs
         csv_file = pd.read_csv(
-            fname, sep=";", encoding="Latin-1", low_memory=False
+            fname, sep=";", encoding="Latin-1", low_memory=False, thousands=','
         )
 
         # defines a dataframe, from the passed headers
         df = csv_file[headers]
 
         # structures the new file to create
+        # selects only specified parameters (eg. categories, countries)
+        # drops products that have no name.
         new_f = df.loc[
             df['main_category_fr'].isin(categories) &
-            df['countries_fr'].isin(countries)
+            df['countries_fr'].isin(countries) & df['product_name'].notnull()
         ]
 
         # save the new file to a csv file, with the name "db_file.csv"
@@ -50,7 +52,6 @@ headers_list = [
     "main_category_fr",
     "energy_100g",
     "fat_100g",
-    "saturated-fat_100g",
     "carbohydrates_100g",
     "sugars_100g",
     "fiber_100g",

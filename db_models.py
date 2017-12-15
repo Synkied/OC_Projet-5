@@ -30,9 +30,11 @@ class Stores(BaseModel):
 
 
 class Products(BaseModel):
-    brand = ForeignKeyField(db_column='brand_id', null=True, rel_model=Brands, to_field='id')
     carbs = FloatField(null=True)
-    cat = ForeignKeyField(db_column='cat_id', rel_model=Categories, to_field='id')
+    cat = ForeignKeyField(
+        db_column='cat_id', rel_model=Categories, to_field='id'
+    )
+    code = IntegerField(unique=True)
     energy = IntegerField(null=True)
     fat = FloatField(null=True)
     fibers = FloatField(null=True)
@@ -40,7 +42,6 @@ class Products(BaseModel):
     nutri_grade = CharField(null=True)
     proteins = FloatField(null=True)
     salt = FloatField(null=True)
-    store = ForeignKeyField(db_column='store_id', null=True, rel_model=Stores, to_field='id')
     sugars = FloatField(null=True)
     traces = CharField(null=True)
     url = CharField(null=True)
@@ -50,16 +51,33 @@ class Products(BaseModel):
 
 
 class Favorites(BaseModel):
-    product = ForeignKeyField(db_column='product_id', rel_model=Products, to_field='id')
-    substitute = ForeignKeyField(db_column='substitute_id', rel_model=Products, related_name='products_substitute_set', to_field='id')
+    product = ForeignKeyField(
+        db_column='product_id',
+        rel_model=Products,
+        to_field='id'
+    )
+    substitute = ForeignKeyField(
+        db_column='substitute_id',
+        rel_model=Products,
+        related_name='products_substitute_set',
+        to_field='id'
+    )
 
     class Meta:
         db_table = 'favorites'
 
 
 class Productsbrands(BaseModel):
-    brands = ForeignKeyField(db_column='Brands_id', rel_model=Brands, to_field='id')
-    products = ForeignKeyField(db_column='Products_id', rel_model=Products, to_field='id')
+    brands = ForeignKeyField(
+        db_column='Brands_id',
+        rel_model=Brands,
+        to_field='id'
+    )
+    products = ForeignKeyField(
+        db_column='Products_id',
+        rel_model=Products,
+        to_field='id'
+    )
 
     class Meta:
         db_table = 'productsbrands'
@@ -70,8 +88,12 @@ class Productsbrands(BaseModel):
 
 
 class Productsstores(BaseModel):
-    products = ForeignKeyField(db_column='Products_id', rel_model=Products, to_field='id')
-    stores = ForeignKeyField(db_column='Stores_id', rel_model=Stores, to_field='id')
+    products = ForeignKeyField(
+        db_column='Products_id', rel_model=Products, to_field='id'
+    )
+    stores = ForeignKeyField(
+        db_column='Stores_id', rel_model=Stores, to_field='id'
+    )
 
     class Meta:
         db_table = 'productsstores'
@@ -79,4 +101,3 @@ class Productsstores(BaseModel):
             (('products', 'stores'), True),
         )
         primary_key = CompositeKey('products', 'stores')
-
