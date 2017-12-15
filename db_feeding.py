@@ -129,7 +129,8 @@ class DBFeed():
                 traces=product["traces_fr"],
                 nutri_grade=product["nutrition_grade_fr"],
                 cat=Categories.get(
-                    Categories.name == product["main_category_fr"]).id,
+                    Categories.name == product["main_category_fr"]
+                ).id,
                 energy=product["energy_100g"],
                 fat=product["fat_100g"],
                 carbs=product["carbohydrates_100g"],
@@ -141,7 +142,11 @@ class DBFeed():
 
     def fill_productsbrands(self):
         # fill with ids of products and brands
-        pass
+        products_dict = csv_to_dict(self.file_name, self.headers)
+
+        for dic in products_dict:
+            print(dic)
+                # Productsbrands.get_or_create(brands="", products="")
 
     def fill_productsstores(self):
         # fill with ids of products and stores
@@ -183,18 +188,15 @@ file = "db_file.csv"
 
 dbf = DBFeed(file, headers_list)
 
-dbf.fill_categories("main_category_fr")
+# dbf.fill_categories("main_category_fr")
 
 # dbf.fill_stores("stores")
 
 # dbf.fill_brands("brands")
 
+# dbf.fill_products()
 
-# t = Brands.get(Brands.name == "Marks & Spencer").id
-# print(t)
-
-dbf.fill_products()
-
+dbf.fill_productsbrands()
 
 # my_cat = Categories.get_or_create(name="Test_cat")
 

@@ -70,7 +70,8 @@
 #     print(d["salt_100g"])
 
 
-d = '2,00E-05'
+d = [{"test": "tss, saa, cac"}]
 
-d.format()
-print(d)
+for i in d:
+    for j in i["test"]:
+        print(j)
