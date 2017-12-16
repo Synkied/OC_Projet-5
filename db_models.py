@@ -43,7 +43,6 @@ class Products(BaseModel):
     proteins = FloatField(null=True)
     salt = FloatField(null=True)
     sugars = FloatField(null=True)
-    traces = CharField(null=True)
     url = CharField(null=True)
 
     class Meta:

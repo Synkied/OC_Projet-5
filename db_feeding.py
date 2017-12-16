@@ -51,6 +51,24 @@ def csv_to_dict(fname, headers):
     # dict conversion of pandas dataframe as records (list of dicts)
     # [{k1:v1, kn:vn}, {k1:v1, kn:vn}]
     csv_dict = fill_nan_as_none[headers].to_dict(orient="records")
+
+    # transforms commas seperated values to list for brands and stores
+    # list comprehension to strip spaces from strings in list
+    for dictionary in csv_dict:
+        if dictionary["brands"] is not None:
+            dictionary["brands"] = [
+                brand.strip()
+                for brand
+                in dictionary["brands"].split(',')
+            ]
+
+        if dictionary["stores"] is not None:
+            dictionary["stores"] = [
+                store.strip()
+                for store
+                in dictionary["stores"].split(',')
+            ]
+
     return csv_dict
 
 
@@ -126,7 +144,6 @@ class DBFeed():
                 code=product["code"],
                 url=product["url"],
                 name=product["product_name"],
-                traces=product["traces_fr"],
                 nutri_grade=product["nutrition_grade_fr"],
                 cat=Categories.get(
                     Categories.name == product["main_category_fr"]
@@ -144,13 +161,54 @@ class DBFeed():
         # fill with ids of products and brands
         products_dict = csv_to_dict(self.file_name, self.headers)
 
+        # this loop gets all dicts in the products_dict list.
+        # for each dict if the brands value is not None,
+        # for each brand, get or create the productsbrands table
+        # based on brand name and product name of each dict.
         for dic in products_dict:
-            print(dic)
-                # Productsbrands.get_or_create(brands="", products="")
+            if dic["brands"] is not None:
+                for brand in dic["brands"]:
+                    # get or create brands and products id
+                    Productsbrands.get_or_create(
+                        # select brands.id
+                        # from Brands table
+                        # where brands.name = brand
+                        brands=Brands.get(
+                            Brands.name == brand
+                        ).id,
+                        # select products.id
+                        # from Products table
+                        # where products.name = dic["product_name"]
+                        products=Products.get(
+                            Products.name == dic["product_name"]
+                        ).id
+                    )
 
     def fill_productsstores(self):
-        # fill with ids of products and stores
-        pass
+        products_dict = csv_to_dict(self.file_name, self.headers)
+
+        # this loop gets all dicts in the products_dict list.
+        # for each dict if the brands value is not None,
+        # for each store, get or create the productsstores table
+        # based on store name and product name of each dict.
+        for dic in products_dict:
+            if dic["stores"] is not None:
+                for store in dic["stores"]:
+                    # get or create stores and products id
+                    Productsstores.get_or_create(
+                        # select stores.id
+                        # from stores table
+                        # where stores.name = store
+                        stores=Stores.get(
+                            Stores.name == store
+                        ).id,
+                        # select products.id
+                        # from Products table
+                        # where products.name = dic["product_name"]
+                        products=Products.get(
+                            Products.name == dic["product_name"]
+                        ).id
+                    )
 
     # def fill_favs(self):
     #     pass
@@ -162,7 +220,6 @@ headers_list = [
     "product_name",
     "brands",
     "stores",
-    "traces_fr",
     "nutrition_grade_fr",
     "main_category_fr",
     "energy_100g",
@@ -196,7 +253,9 @@ dbf = DBFeed(file, headers_list)
 
 # dbf.fill_products()
 
-dbf.fill_productsbrands()
+# dbf.fill_productsbrands()
+
+dbf.fill_productsstores()
 
 # my_cat = Categories.get_or_create(name="Test_cat")
 

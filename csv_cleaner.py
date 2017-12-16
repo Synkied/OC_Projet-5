@@ -47,7 +47,6 @@ headers_list = [
     "product_name",
     "brands",
     "stores",
-    "traces_fr",
     "nutrition_grade_fr",
     "main_category_fr",
     "energy_100g",
