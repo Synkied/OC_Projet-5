@@ -13,21 +13,9 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         )
         print("*" * 56)
         print("-" * 56)
-        self.get_categorie_or_favs()
+        self.main_menu()
 
-    # def main_menu(self):
-    #     print("Voulez-vous utiliser l'application ? (O/N): ")
-    #     answer = input(" >> ")
-    #     if answer.upper() == "O":
-    #         self.get_categorie_or_favs()
-    #     elif answer.upper() == "N":
-    #         print("Au revoir, alors !")
-    #         exit()
-    #     else:
-    #         print("Ce n'est pas une réponse valide, veuillez réessayer :).")
-    #         self.main_menu()
-
-    def get_categorie_or_favs(self):
+    def main_menu(self):
         """
         Main menu of the app.
         Asks what the user wants to do.
@@ -63,7 +51,9 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
     def display_categories(self):
         """
-        display categories in the terminal
+        Display categories in the terminal.
+        if the input is not a "n" or "p" or a number,
+        the user is asked to try again.
         """
         print()
         print("Voici toutes les catégories, veuillez en choisir une : ")
@@ -71,7 +61,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         select_categories = Categories.select().order_by(Categories.id)
         categories_ids = []
         for category in select_categories:
-            # get all categories ids in a list to iterate over...
+            # put all categories ids in a list to iterate over...
             categories_ids.append(category.id)
             print(category.id, "-", category.name)
         print()
@@ -93,9 +83,6 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             print("Veuillez entrer un nombre.")
             print("!" * 26)
             self.display_categories()
-
-        # if Categories.select().Min(Categories.id) <= cat_choice <= Categories.select().Max(Categories.id):
-        #     print("Ok")
 
     def display_products(self, cat_choice):
         """
@@ -119,48 +106,51 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         print()
         prod_choice = input(" >> ")
 
-        try:
-            prod_choice = int(prod_choice)
-            if prod_choice in products_ids:
-                self.get_better_product(prod_choice)
-            else:
+        if prod_choice.lower() == "n" or prod_choice.lower() == "p":
+            # get next or previous page if asked by user
+            self.menu_actions[prod_choice](self, cat_choice)
+
+        else:
+            try:
+                prod_choice = int(prod_choice)
+                if prod_choice in products_ids:
+                    self.draw_better_product(prod_choice)
+                else:
+                    print("!" * 36)
+                    print("Veuillez entrer un produit valide.")
+                    print("!" * 36)
+                    self.display_products(cat_choice)
+
+            except ValueError as VE:
+                print()
                 print("!" * 36)
-                print("Veuillez entrer un produit valide.")
+                print("Veuillez entrer un nombre ou (n/p).")
                 print("!" * 36)
                 self.display_products(cat_choice)
 
-        except ValueError as VE:
-            print()
-            print("!" * 26)
-            print("Veuillez entrer un nombre.")
-            print("!" * 26)
-            self.display_products(cat_choice)
-
-    def get_better_product(self, prod_choice):
+    def draw_better_product(self, prod_choice):
         # get nutri grade of chosen product
         cur_product = Products.get(
             Products.id == prod_choice
         )
 
-        substitute_query = Products.select().where(Products.nutri_grade <= cur_product.nutri_grade, Products.cat_id == cur_product.cat_id).order_by(fn.Rand()).paginate(1, 1)
+        substitute_query = Products.select().where(Products.nutri_grade <= cur_product.nutri_grade, Products.cat_id == cur_product.cat_id).order_by(fn.Rand()).limit(1)
         for product in substitute_query:
             print("Nom :", product.name, "/ Nutri grade :", product.nutri_grade)
             # print(Brands.get(Brands.id == Productsbrands.get(product.id)).id)
             brands = (Brands.select().join(Productsbrands).join(Products).where(Products.id == product.id))
             for brand in brands:
-                print("Marques : ", brand.name)
+                print("Marques :", brand.name)
             stores = (Stores.select().join(Productsstores).join(Products).where(Products.id == product.id))
             for store in stores:
-                print("Magasin : ", store.name)
+                print("Magasin :", store.name)
 
-
-        # display brands and stores
-
-    def next_page(self):
-        pass
+    def next_page(self, cat_choice):
+        print("page suivante")
+        self.display_products(cat_choice).query.paginate(2, 10)
 
     def previous_page(self):
-        pass
+        print("page précédente")
 
     def add_favs(self):
         pass
@@ -169,14 +159,19 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         pass
 
     def display_favs(self):
-        pass
+        get_favs = Favorites.select()
+        count_favs = Favorites.select().count()
+        if count_favs == 0:
+            print("Vous n'avez pas encore enregistré de favoris.")
+        else:
+            print(get_favs.product, get_favs.substitute)
 
     menu_actions = {
-        'main_menu': get_categorie_or_favs,
+        'main_menu': main_menu,
         '1': display_categories,
         '2': display_favs,
-        '9': next_page,
-        '8': previous_page,
+        'n': next_page,
+        'p': previous_page,
         '0': quit
     }
 

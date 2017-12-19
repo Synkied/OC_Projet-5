@@ -1,6 +1,22 @@
 import pandas as pd
 
 
+# def download_csv_openfoodfacts(url):
+#     """
+#     Downloads a CSV from a given URL.
+#     """
+#     csv_url = url
+
+#     data = pd.read_csv(csv_url, encoding="utf-16", sep="\t")
+
+#     print("Download in progress...")
+
+#     data.to_csv("test.csv", index=False, encoding="utf-16", sep=";")
+
+
+# url = "https://world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv"
+
+
 class CSVCleaner():
 
     # #TODO: RAISE ERRORS ---------------------------->!!!
@@ -11,7 +27,7 @@ class CSVCleaner():
 
     def csv_cleaner(self, headers, categories=[], countries=[]):
 
-        # ## TODO: DETECT OS FOR ENCODING
+        # ## TODO: DETECT OS FOR ENCODING ---------------------------->!!!
         """
         Cleans the csv passed to the instanciation of the class.
         headers: a list of headers that must be in the file.
