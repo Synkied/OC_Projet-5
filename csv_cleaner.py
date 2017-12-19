@@ -3,13 +3,15 @@ import pandas as pd
 
 class CSVCleaner():
 
-    # #TODO: RAISE ERRORS
+    # #TODO: RAISE ERRORS ---------------------------->!!!
     # code: puissances
 
     def __init__(self, file_name):
         self.file_name = file_name
 
     def csv_cleaner(self, headers, categories=[], countries=[]):
+
+        # ## TODO: DETECT OS FOR ENCODING
         """
         Cleans the csv passed to the instanciation of the class.
         headers: a list of headers that must be in the file.
@@ -38,7 +40,7 @@ class CSVCleaner():
         ]
 
         # save the new file to a csv file, with the name "db_file.csv"
-        new_f.to_csv("db_file.csv", index=False, encoding="utf-8", sep=";")
+        new_f.to_csv("db_file.csv", index=False, encoding="utf-16", sep=";")
 
 
 headers_list = [

@@ -1,4 +1,5 @@
 import pandas as pd
+from peewee import *
 from db_models import *
 
 file = ("db_file.csv")
