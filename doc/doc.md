@@ -6,7 +6,15 @@ Soupes,
 Jus de fruits,
 Chips et frites,
 
+## HOW TO
 
+1. DL CSV file
+2. Clean CSV file
+3. Create DB credentials
+4. Build DB from SQL file
+5. Feed DB with db_feeding.py file
+6. Use the program
+7. Enjoy
 
 ## Python Program
 

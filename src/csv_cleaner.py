@@ -41,7 +41,11 @@ class CSVCleaner():
         # sep: csv file's separator
         # low_memory: avoiding unnecessary warning msgs
         csv_file = pd.read_csv(
-            fname, sep=";", encoding="Latin-1", low_memory=False, thousands=','
+            fname,
+            sep=";",
+            encoding="Latin-1",
+            low_memory=False,
+            thousands=',',
         )
 
         # defines a dataframe, from the passed headers
@@ -52,11 +56,17 @@ class CSVCleaner():
         # drops products that have no name.
         new_f = df.loc[
             df['main_category_fr'].isin(categories) &
-            df['countries_fr'].isin(countries) & df['product_name'].notnull()
+            df['countries_fr'].isin(countries) & df['product_name'].notnull() &
+            df['nutrition_grade_fr'].notnull()
         ]
 
         # save the new file to a csv file, with the name "db_file.csv"
-        new_f.to_csv("db_file.csv", index=False, encoding="utf-16", sep=";")
+        new_f.to_csv(
+            "../db_file.csv",
+            index=False,
+            encoding="utf-16",
+            sep=";",
+        )
 
 
 headers_list = [
@@ -95,6 +105,6 @@ categories_list = [
 countries_list = ["France"]
 
 
-new_csv = CSVCleaner("fr.openfoodfacts.org.products-2.csv")
+new_csv = CSVCleaner("../fr.openfoodfacts.org.products-2.csv")
 
 new_csv.csv_cleaner(headers_list, categories_list, countries_list)

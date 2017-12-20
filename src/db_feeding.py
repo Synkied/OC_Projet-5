@@ -2,8 +2,6 @@ import pandas as pd
 from peewee import *
 from db_models import *
 
-file = ("db_file.csv")
-
 
 # #####--- FUNCTIONS ----##### #
 def get_unique_df_values(df_name, col_name):
@@ -23,7 +21,10 @@ def csv_to_df(fname, headers):
     # sep: csv file's separator
     # low_memory: avoiding unnecessary warning msgs
     csv_file = pd.read_csv(
-        fname, sep=";", encoding="utf-8", low_memory=False
+        fname,
+        sep=";",
+        encoding="utf-16",
+        low_memory=False
     )
 
     # defines a dataframe, from the passed headers
@@ -40,7 +41,10 @@ def csv_to_dict(fname, headers):
     # sep: csv file's separator
     # low_memory: avoiding unnecessary warning msgs
     csv_file = pd.read_csv(
-        fname, sep=";", encoding="utf-8", low_memory=False
+        fname,
+        sep=";",
+        encoding="utf-16",
+        low_memory=False
     )
 
     # Soft conversion of columns to pandas objects
@@ -185,6 +189,8 @@ class DBFeed():
                         ).id
                     )
 
+        # #can be relocated in fill_products()
+
     def fill_productsstores(self):
         products_dict = csv_to_dict(self.file_name, self.headers)
 
@@ -210,6 +216,7 @@ class DBFeed():
                             Products.name == dic["product_name"]
                         ).id
                     )
+        # #can be relocated in fill_products()
 
     # def fill_favs(self):
     #     pass
@@ -242,31 +249,18 @@ tables = [
 
 ]
 
-file = "db_file.csv"
+file = "../db_file.csv"
 
 dbf = DBFeed(file, headers_list)
 
-# dbf.fill_categories("main_category_fr")
+dbf.fill_categories("main_category_fr")
 
-# dbf.fill_stores("stores")
+dbf.fill_stores("stores")
 
-# dbf.fill_brands("brands")
+dbf.fill_brands("brands")
 
-# dbf.fill_products()
+dbf.fill_products()
 
-# dbf.fill_productsbrands()
+dbf.fill_productsbrands()
 
 dbf.fill_productsstores()
-
-# my_cat = Categories.get_or_create(name="Test_cat")
-
-# print(my_cat2[0].url)
-
-# for i in my_cat:
-#     print(i)
-
-# test = Products.create(name="test", cat=my_cat[0].id)
-
-# get cats
-# get or create cats
-# get or create products

@@ -1,7 +1,9 @@
 from peewee import *
 
 # TODO: configparser credentials ---------------------------->!!!
-db_conn = MySQLDatabase('openfoodfacts_oc', **{'user': 'quentin', 'password': 'openffoc'})
+db_conn = MySQLDatabase('openfoodfacts_oc', **{
+    'user': 'quentin', 'password': 'openffoc'
+})
 
 
 class BaseModel(Model):

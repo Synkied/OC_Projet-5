@@ -114,7 +114,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             try:
                 prod_choice = int(prod_choice)
                 if prod_choice in products_ids:
-                    self.draw_better_product(prod_choice)
+                    self.display_better_product(prod_choice)
                 else:
                     print("!" * 36)
                     print("Veuillez entrer un produit valide.")
@@ -128,22 +128,38 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                 print("!" * 36)
                 self.display_products(cat_choice)
 
-    def draw_better_product(self, prod_choice):
+    def display_better_product(self, prod_choice):
         # get nutri grade of chosen product
         cur_product = Products.get(
             Products.id == prod_choice
         )
 
-        substitute_query = Products.select().where(Products.nutri_grade <= cur_product.nutri_grade, Products.cat_id == cur_product.cat_id).order_by(fn.Rand()).limit(1)
+        substitute_query = Products.select().where(
+            Products.nutri_grade <= cur_product.nutri_grade,
+            Products.cat_id == cur_product.cat_id).order_by(
+            fn.Rand()
+        ).limit(1)
         for product in substitute_query:
-            print("Nom :", product.name, "/ Nutri grade :", product.nutri_grade)
-            # print(Brands.get(Brands.id == Productsbrands.get(product.id)).id)
-            brands = (Brands.select().join(Productsbrands).join(Products).where(Products.id == product.id))
+            print()
+            print("Voici le substitut proposé :")
+            print("-" * 28)
+            print(
+                "Nom :", product.name, "/ nutri grade :", product.nutri_grade
+            )
+
+            # print brands and stores if defined
+            brands = (Brands.select().join(Productsbrands).join(
+                Products
+            ).where(Products.id == product.id))
             for brand in brands:
                 print("Marques :", brand.name)
-            stores = (Stores.select().join(Productsstores).join(Products).where(Products.id == product.id))
+            stores = (Stores.select().join(Productsstores).join(
+                Products
+            ).where(Products.id == product.id))
             for store in stores:
                 print("Magasin :", store.name)
+            # OFF url
+            print("URL OpenFoodFacts :", product.url)
 
     def next_page(self, cat_choice):
         print("page suivante")
