@@ -48,6 +48,8 @@ class CSVCleaner():
             thousands=',',
         )
 
+        print(csv_file)
+
         # defines a dataframe, from the passed headers
         df = csv_file[headers]
 

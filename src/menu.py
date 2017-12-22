@@ -1,4 +1,5 @@
 from db_models import *
+import math
 
 
 class Menu():
@@ -115,18 +116,18 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             query_paginated = query.paginate(page, products_per_page)
 
             # an empty list to store all filtered products id
-            products_ids = []
+            cur_page_prod_ids = []
             num_products = [product.id for product in query]
 
             for product in query_paginated:
                 # get all products ids in a list to iterate over...
-                products_ids.append(product.id)
+                cur_page_prod_ids.append(product.id)
                 print(product.id, "-", product.name)
 
-            num_of_pages = len(num_products) // products_per_page
+            number_of_pages = math.ceil(len(num_products) / products_per_page)
 
             print("*" * 25)
-            print("Page", page, "/", num_of_pages)
+            print("Page", page, "/", number_of_pages)
 
             print()
             prod_choice = input(" >> ")
@@ -138,12 +139,13 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     cat_choice,
                     page,
                     products_per_page,
+                    number_of_pages,
                 )
 
             else:
                 try:
                     prod_choice = int(prod_choice)
-                    if prod_choice in products_ids:
+                    if prod_choice in cur_page_prod_ids:
                         self.display_better_product(prod_choice)
                     else:
                         print("!" * 36)
@@ -153,6 +155,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                             cat_choice,
                             page,
                             products_per_page,
+                            number_of_pages,
                         )
 
                 except KeyboardInterrupt as keyinter:
@@ -175,7 +178,50 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             exit()
 
         # returns query to be able to display next and previous pages
-        return query, num_of_pages
+        return query
+
+    def next_page(self, cat_choice, page, products_per_page, number_of_pages):
+        """
+        Gets the next page if it exists
+        """
+        if page < number_of_pages:
+            page += 1
+            query = self.display_products(cat_choice, page, products_per_page)
+            query.paginate(
+                page,
+                products_per_page,
+            )
+
+        else:
+            print()
+            print("Vous êtes à la dernière page ;).")
+            query = self.display_products(cat_choice, page, products_per_page)
+            query.paginate(
+                page,
+                products_per_page,
+            )
+
+    def previous_page(self, cat_choice, page, products_per_page, number_of_pages):
+        """
+        If the current page isn't 1, gets previous page.
+        """
+        if page > 1:
+            page -= 1
+            query = self.display_products(cat_choice, page, products_per_page)
+
+            query.paginate(
+                page,
+                products_per_page,
+            )
+        else:
+            print()
+            print("Vous êtes à la première page ;).")
+            query = self.display_products(cat_choice, page, products_per_page)
+
+            query.paginate(
+                page,
+                products_per_page,
+            )
 
     def display_better_product(self, prod_choice):
         # get nutri grade of chosen product
@@ -234,39 +280,6 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
             else:
                 print('Veuillez entrer "o" ou "n"')
-
-    def next_page(self, cat_choice, page, products_per_page):
-        """
-        Gets the next page if it exists
-        """
-        page += 1
-        query, num_of_pages = self.display_products(cat_choice, page, products_per_page)
-
-        query.paginate(
-            page,
-            products_per_page,
-        )
-
-    def previous_page(self, cat_choice, page, products_per_page):
-        """
-        If the current page isn't 1, gets previous page.
-        """
-        if page > 1:
-            page -= 1
-            query, num_of_pages = self.display_products(cat_choice, page, products_per_page)
-
-            query.paginate(
-                page,
-                products_per_page,
-            )
-        else:
-            print("Vous êtes à la première page ;). ")
-            query, num_of_pages = self.display_products(cat_choice, page, products_per_page)
-
-            query.paginate(
-                page,
-                products_per_page,
-            )
 
     def add_favs(self):
         pass
