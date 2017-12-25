@@ -380,12 +380,34 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     # and the brands and stores associated with each them
                     product_data.append([
                         favorite.id,
-                        colored("".join(product.name for product in products), "red"),
-                        colored(", ".join(tuple(brand.name for brand in prod_brands)), "yellow"),
-                        colored(", ".join(tuple(store.name for store in prod_stores)), "yellow"),
-                        colored("".join(sub.name for sub in substitutes), "green"),
-                        colored(", ".join(tuple(brand.name for brand in sub_brands)), "yellow"),
-                        colored(", ".join(tuple(store.name for store in sub_stores)), "yellow"),
+                        colored(
+                            "".join(product.name for product in products),
+                            "red"
+                        ),
+                        colored(
+                            ", ".join(tuple(brand.name
+                                            for brand in prod_brands)),
+                            "yellow"
+                        ),
+                        colored(
+                            ", ".join(tuple(store.name
+                                            for store in prod_stores)),
+                            "yellow"
+                        ),
+                        colored(
+                            "".join(sub.name for sub in substitutes),
+                            "green"
+                        ),
+                        colored(
+                            ", ".join(tuple(brand.name
+                                            for brand in sub_brands)),
+                            "yellow"
+                        ),
+                        colored(
+                            ", ".join(tuple(store.name
+                                            for store in sub_stores)),
+                            "yellow"
+                        ),
                     ])
 
                 print(product_table.table)
