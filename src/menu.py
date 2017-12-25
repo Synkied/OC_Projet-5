@@ -1,15 +1,11 @@
 import math
-from colorclass import Color, Windows
+from colorama import init
+from termcolor import colored
 from terminaltables import AsciiTable
 
 from db_models import *
 
-
-def colors():
-    """
-    Enables coloring mode for windows cmdline
-    """
-    Windows.enable(auto_colors=True, reset_atexit=True)
+init()  # inits colorama
 
 
 class Menu():
@@ -267,23 +263,28 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
             print(substitute_table.table)
 
-        print("Voulez-vous l'enregistrer ? (o/n)")
+            self.add_favs(cur_product, substitute)
 
-        save_fav = input(" >> ")
-
-        self.add_favs(save_fav, cur_product, substitute)
-
-    def add_favs(self, save_fav, cur_product, substitute):
+    def add_favs(self, cur_product, substitute):
         """
         Tries to add a favorite to the Favorites table.
         The user can disagree and then it goes back to the main menu.
         """
+        print("Voulez-vous l'enregistrer ? (o/n)")
+
+        save_fav = input(" >> ")
+
         while save_fav not in ["o".lower(), "n".lower()]:
-                print('Veuillez entrer "o" ou "n"')
-                save_fav = input(" >> ")
+            print('Veuillez entrer "o" ou "n"')
+            save_fav = input(" >> ")
 
         if save_fav.lower() == "o":
-            self.add_favs(cur_product, substitute)
+            Favorites.create(
+                product_id=cur_product.id,
+                substitute_id=substitute.id,
+            )
+
+            print()
             print(
                 "Substitut enregistré dans vos favoris ! Retour au menu."
             )
@@ -293,25 +294,23 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             print("Substitut non enregistré, retour au menu.")
             self.menu_actions['main_menu'](self)
 
-        Favorites.create(
-            product_id=cur_product.id,
-            substitute_id=substitute.id,
-        )
-
-    def select_stores(self, product, sub_id):
+    def select_stores(self, product, product_id):
         """
-        Query to select stores
+        Query to select stores from many to many table
         """
         stores = (Stores.select().join(Productsstores).join(
             Products
-        ).where(Products.id == getattr(product, sub_id)))
+        ).where(Products.id == getattr(product, product_id)))
 
         return stores
 
-    def select_brands(self, product, sub_id):
+    def select_brands(self, product, product_id):
+        """
+        Query to select brands from many to many table
+        """
         brands = (Brands.select().join(Productsbrands).join(
             Products
-        ).where(Products.id == getattr(product, sub_id)))
+        ).where(Products.id == getattr(product, product_id)))
 
         return brands
 
@@ -327,12 +326,12 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         product_data = [
             [
                 'id',
-                Color('{autored} Produit substitué {/autored}'),
-                'Marque(s)',
-                'Magasin(s)',
-                Color('{autogreen} Substituant {/autogreen}'),
-                'Marque(s)',
-                'Magasin(s)',
+                colored('Produit substitué', 'red'),
+                colored('Marque(s)', 'yellow'),
+                colored('Magasin(s)', 'yellow'),
+                colored('Substituant', 'green'),
+                colored('Marque(s)', 'yellow'),
+                colored('Magasin(s)', 'yellow'),
             ]
         ]
 
@@ -381,12 +380,12 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     # and the brands and stores associated with each them
                     product_data.append([
                         favorite.id,
-                        "".join(product.name for product in products),
-                        ", ".join(tuple(brand.name for brand in prod_brands)),
-                        ", ".join(tuple(store.name for store in prod_stores)),
-                        "".join(sub.name for sub in substitutes),
-                        ", ".join(tuple(brand.name for brand in sub_brands)),
-                        ", ".join(tuple(store.name for store in sub_stores)),
+                        colored("".join(product.name for product in products), "red"),
+                        colored(", ".join(tuple(brand.name for brand in prod_brands)), "yellow"),
+                        colored(", ".join(tuple(store.name for store in prod_stores)), "yellow"),
+                        colored("".join(sub.name for sub in substitutes), "green"),
+                        colored(", ".join(tuple(brand.name for brand in sub_brands)), "yellow"),
+                        colored(", ".join(tuple(store.name for store in sub_stores)), "yellow"),
                     ])
 
                 print(product_table.table)
@@ -399,7 +398,10 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
     def edit_favs(self, favorites_ids):
         print()
-        print("Choisissez un favori à supprimer ou (n)")
+        print(
+            "Choisissez un favori à supprimer ou (n) \
+pour retourner au menu principal."
+        )
         edit_fav_choice = input(" >> ")
 
         try:
@@ -414,7 +416,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                         self.remove_favs(edit_fav_choice, favorites_ids)
                     else:
                         print("!" * 36)
-                        print("Veuillez entrer un produit valide.")
+                        print("Veuillez entrer un favori valide.")
                         print("!" * 36)
                         self.edit_favs(favorites_ids)
 
@@ -434,23 +436,30 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             exit()
 
     def remove_favs(self, edit_fav_choice, favorites_ids):
+        """
+        Removing favorites from the Favorites table.
+        """
         print("Êtes-vous sûr ? (o/n)")
-        save_fav = input(" >> ")
+        remove_fav = input(" >> ")
 
-        while save_fav not in ["o".lower(), "n".lower()]:
+        while remove_fav not in ["o".lower(), "n".lower()]:
             print('Veuillez entrer "o" ou "n"')
-            save_fav = input(" >> ")
+            remove_fav = input(" >> ")
         try:
             edit_fav_choice = int(edit_fav_choice)
-            if edit_fav_choice in favorites_ids:
+            if remove_fav.lower() == "o":
                 favorite = Favorites.get(Favorites.id == edit_fav_choice)
                 favorite.delete_instance()
+                print()
+                print("/" * 17)
                 print("Favori supprimé !")
+                print("/" * 17)
             else:
-                print("!" * 36)
-                print("Veuillez entrer un produit valide.")
-                print("!" * 36)
-                self.edit_favs(favorites_ids)
+                print()
+                print("!" * 18)
+                print("Opération annulée.")
+                print("!" * 18)
+                self.display_favs()
 
         except KeyboardInterrupt as keyinter:
                 print("Au revoir, alors ! :)")
@@ -531,6 +540,9 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                 products_p_page,
             )
 
+    """
+    Menu actions, used to quickly access some funcs
+    """
     menu_actions = {
         'main_menu': main_menu,
         '1': display_categories,
@@ -542,5 +554,4 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
 
 if __name__ == "__main__":
-    colors()
     menu = Menu()
