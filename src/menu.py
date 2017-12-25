@@ -1,5 +1,15 @@
-from db_models import *
 import math
+from colorclass import Color, Windows
+from terminaltables import AsciiTable
+
+from db_models import *
+
+
+def colors():
+    """
+    Enables coloring mode for windows cmdline
+    """
+    Windows.enable(auto_colors=True, reset_atexit=True)
 
 
 class Menu():
@@ -22,6 +32,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         Asks what the user wants to do.
         """
         print()
+        print("=" * 50)
+        print("Menu principal".upper().center(50))
         print("=" * 50)
         print("1 - Lister les catégories d'aliments à substituer.")
         print("2 - Retrouver mes aliments substitués.")
@@ -61,24 +73,32 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         if the input is not a "n" or "p" or a number,
         the user is asked to try again.
         """
+
+        # creating the header of the categories table
+        categories_data = [["id", "Catégorie"]]
+
+        # creating an AsciiTable object from terminatables,
+        # using categories_data
+        categories_table = AsciiTable(categories_data)
+
         print()
         print("Voici toutes les catégories, veuillez en choisir une : ")
-        print("-" * 54)
         try:
             select_categories = Categories.select().order_by(Categories.id)
             categories_ids = []
             for category in select_categories:
                 # put all categories ids in a list to iterate over...
                 categories_ids.append(category.id)
-                print(category.id, "-", category.name)
+                categories_data.append([category.id, category.name])
             print()
+            print(categories_table.table)
             cat_choice = input(" >> ")
 
             try:
                 cat_choice = int(cat_choice)
 
                 if cat_choice in categories_ids:
-                    self.display_products(cat_choice, 1, 10)
+                    self.display_products(cat_choice, 1, 10, None)
                 else:
                     print("!" * 36)
                     print("Veuillez entrer une catégorie valide.")
@@ -96,15 +116,21 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             print("Au revoir, alors ! :)")
             exit()
 
-    def display_products(self, cat_choice, page, products_per_page):
+    def display_products(self, cat_choice, page, products_p_page, n_of_pages):
         """
         display products in the terminal.
         cat_choice is the category selected by the user.
         """
+        # creating the header of the categories table
+        products_data = [["id", "Produit", "Nutri grade"]]
+
+        # creating an AsciiTable object from terminatables,
+        # using products_data
+        products_table = AsciiTable(products_data)
+
         print()
         print("Voici les produits, veuillez en choisir un : ")
         print("Page suivante (n), page précédente (p)")
-        print("-" * 54)
         try:
             query = Products.select().where(
                 Products.cat_id == cat_choice
@@ -113,7 +139,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             )
 
             # query pagination
-            query_paginated = query.paginate(page, products_per_page)
+            query_paginated = query.paginate(page, products_p_page)
 
             # an empty list to store all filtered products id
             cur_page_prod_ids = []
@@ -122,12 +148,18 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             for product in query_paginated:
                 # get all products ids in a list to iterate over...
                 cur_page_prod_ids.append(product.id)
-                print(product.id, "-", product.name)
+                products_data.append([
+                    product.id,
+                    product.name,
+                    product.nutri_grade,
+                ])
 
-            number_of_pages = math.ceil(len(num_products) / products_per_page)
+            print(products_table.table)
 
-            print("*" * 25)
-            print("Page", page, "/", number_of_pages)
+            n_of_pages = math.ceil(len(num_products) / products_p_page)
+
+            print("*" * 11)
+            print("Page", page, "/", n_of_pages)
 
             print()
             prod_choice = input(" >> ")
@@ -138,8 +170,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     self,
                     cat_choice,
                     page,
-                    products_per_page,
-                    number_of_pages,
+                    products_p_page,
+                    n_of_pages,
                 )
 
             else:
@@ -154,8 +186,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                         self.display_products(
                             cat_choice,
                             page,
-                            products_per_page,
-                            number_of_pages,
+                            products_p_page,
+                            n_of_pages,
                         )
 
                 except KeyboardInterrupt as keyinter:
@@ -170,7 +202,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     self.display_products(
                         cat_choice,
                         page,
-                        products_per_page,
+                        products_p_page,
+                        n_of_pages,
                     )
 
         except KeyboardInterrupt as keyinter:
@@ -180,120 +213,323 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         # returns query to be able to display next and previous pages
         return query
 
-    def next_page(self, cat_choice, page, products_per_page, number_of_pages):
+    def display_better_product(self, prod_choice):
+        """
+        Displays a better product than the one chosen by the user.
+
+        """
+
+        # header for the substitute table
+        substitute_data = [
+            [
+                "Nom",
+                "Nutri grade",
+                "Marques",
+                "Magasin",
+                "URL",
+            ]
+        ]
+
+        # transforms the substitute_data to a table
+        substitute_table = AsciiTable(substitute_data)
+
+        cur_product = Products.get(
+            Products.id == prod_choice
+        )
+
+        substitute_query = Products.select().where(
+            Products.nutri_grade <= cur_product.nutri_grade,
+            Products.cat_id == cur_product.cat_id).order_by(
+            fn.Rand()
+        ).limit(1)
+
+        # ... else give a product with a better nutrigrade
+        # else:
+        #     substitute_query = Products.select().where(
+        #         Products.nutri_grade < cur_product.nutri_grade,
+        #         Products.cat_id == cur_product.cat_id).order_by(
+        #         fn.Rand()
+        #     ).limit(1)
+
+        for substitute in substitute_query:
+            sub_brands = self.select_brands(substitute, "id")
+            sub_stores = self.select_stores(substitute, "id")
+            print()
+            print("Voici le substitut proposé :")
+            print("-" * 28)
+            substitute_data.append([
+                substitute.name,
+                substitute.nutri_grade,
+                ", ".join(tuple(brand.name for brand in sub_brands)),
+                ", ".join(tuple(store.name for store in sub_stores)),
+                substitute.url,
+            ])
+
+            print(substitute_table.table)
+
+        print("Voulez-vous l'enregistrer ? (o/n)")
+
+        save_fav = input(" >> ")
+
+        self.add_favs(save_fav, cur_product, substitute)
+
+    def add_favs(self, save_fav, cur_product, substitute):
+        """
+        Tries to add a favorite to the Favorites table.
+        The user can disagree and then it goes back to the main menu.
+        """
+        while save_fav not in ["o".lower(), "n".lower()]:
+                print('Veuillez entrer "o" ou "n"')
+                save_fav = input(" >> ")
+
+        if save_fav.lower() == "o":
+            self.add_favs(cur_product, substitute)
+            print(
+                "Substitut enregistré dans vos favoris ! Retour au menu."
+            )
+            self.menu_actions['main_menu'](self)
+
+        elif save_fav.lower() == "n":
+            print("Substitut non enregistré, retour au menu.")
+            self.menu_actions['main_menu'](self)
+
+        Favorites.create(
+            product_id=cur_product.id,
+            substitute_id=substitute.id,
+        )
+
+    def select_stores(self, product, sub_id):
+        """
+        Query to select stores
+        """
+        stores = (Stores.select().join(Productsstores).join(
+            Products
+        ).where(Products.id == getattr(product, sub_id)))
+
+        return stores
+
+    def select_brands(self, product, sub_id):
+        brands = (Brands.select().join(Productsbrands).join(
+            Products
+        ).where(Products.id == getattr(product, sub_id)))
+
+        return brands
+
+    def display_favs(self):
+        """
+        Displays the favorites saved by user.
+        This function uses colorclass to color the terminal
+        It also uses terminaltables to display the data as tables.
+        """
+        favorites = Favorites.select()
+        count_favs = Favorites.select().count()
+
+        product_data = [
+            [
+                'id',
+                Color('{autored} Produit substitué {/autored}'),
+                'Marque(s)',
+                'Magasin(s)',
+                Color('{autogreen} Substituant {/autogreen}'),
+                'Marque(s)',
+                'Magasin(s)',
+            ]
+        ]
+
+        product_table = AsciiTable(product_data)
+
+        try:
+            if count_favs == 0:
+                print("Vous n'avez pas encore enregistré de favoris.")
+            else:
+                print()
+                print("Vous avez", count_favs, "favoris.")
+                print("Les voici :")
+                print("-" * 30)
+
+                favorites_ids = []
+
+                for favorite in favorites:
+                    favorites_ids.append(favorite.id)
+
+                    substitutes = Products.select().where(
+                        Products.id == favorite.substitute_id
+                    )
+                    products = Products.select().where(
+                        Products.id == favorite.product_id
+                    )
+
+                    # get the brands and stores of the substitutes
+                    sub_brands = self.select_brands(favorite, "substitute_id")
+                    sub_stores = self.select_stores(favorite, "substitute_id")
+                    # get the brands and stores of the products
+                    prod_brands = self.select_brands(favorite, "product_id")
+                    prod_stores = self.select_stores(favorite, "product_id")
+
+                    # display products and substitutes
+                    # Colorama is used to color some texts
+                    for product in products:
+                        pass
+
+                    for sub in substitutes:
+                        pass
+
+                    # Appends data to the product_data list.
+                    # These are supposed to be represented as tables.
+                    # Datas are :
+                    # favorite id, product name, substitute name
+                    # and the brands and stores associated with each them
+                    product_data.append([
+                        favorite.id,
+                        "".join(product.name for product in products),
+                        ", ".join(tuple(brand.name for brand in prod_brands)),
+                        ", ".join(tuple(store.name for store in prod_stores)),
+                        "".join(sub.name for sub in substitutes),
+                        ", ".join(tuple(brand.name for brand in sub_brands)),
+                        ", ".join(tuple(store.name for store in sub_stores)),
+                    ])
+
+                print(product_table.table)
+
+                self.edit_favs(favorites_ids)
+
+        except KeyboardInterrupt as keyinter:
+            print("Au revoir, alors ! :)")
+            exit()
+
+    def edit_favs(self, favorites_ids):
+        print()
+        print("Choisissez un favori à supprimer ou (n)")
+        edit_fav_choice = input(" >> ")
+
+        try:
+            if edit_fav_choice.lower() == "n":
+                print("Retour au menu principal.")
+                self.menu_actions['main_menu'](self)
+
+            else:
+                try:
+                    edit_fav_choice = int(edit_fav_choice)
+                    if edit_fav_choice in favorites_ids:
+                        self.remove_favs(edit_fav_choice, favorites_ids)
+                    else:
+                        print("!" * 36)
+                        print("Veuillez entrer un produit valide.")
+                        print("!" * 36)
+                        self.edit_favs(favorites_ids)
+
+                except KeyboardInterrupt as keyinter:
+                        print("Au revoir, alors ! :)")
+                        exit()
+
+                except ValueError as VE:
+                    print()
+                    print("!" * 36)
+                    print("Veuillez entrer un nombre ou (n).")
+                    print("!" * 36)
+                    self.edit_favs(favorites_ids)
+
+        except KeyboardInterrupt as keyinter:
+            print("Au revoir, alors ! :)")
+            exit()
+
+    def remove_favs(self, edit_fav_choice, favorites_ids):
+        print("Êtes-vous sûr ? (o/n)")
+        save_fav = input(" >> ")
+
+        while save_fav not in ["o".lower(), "n".lower()]:
+            print('Veuillez entrer "o" ou "n"')
+            save_fav = input(" >> ")
+        try:
+            edit_fav_choice = int(edit_fav_choice)
+            if edit_fav_choice in favorites_ids:
+                favorite = Favorites.get(Favorites.id == edit_fav_choice)
+                favorite.delete_instance()
+                print("Favori supprimé !")
+            else:
+                print("!" * 36)
+                print("Veuillez entrer un produit valide.")
+                print("!" * 36)
+                self.edit_favs(favorites_ids)
+
+        except KeyboardInterrupt as keyinter:
+                print("Au revoir, alors ! :)")
+                exit()
+
+        except ValueError as VE:
+            print()
+            print("!" * 36)
+            print("Veuillez entrer un nombre ou (n).")
+            print("!" * 36)
+            self.edit_favs(favorites_ids)
+
+        self.display_favs()
+
+    def ask_oui_non(self):
+        pass
+
+    def next_page(self, cat_choice, page, products_p_page, n_of_pages):
         """
         Gets the next page if it exists
         """
-        if page < number_of_pages:
+        if page < n_of_pages:
             page += 1
-            query = self.display_products(cat_choice, page, products_per_page)
+            query = self.display_products(
+                cat_choice,
+                page,
+                products_p_page,
+                n_of_pages,
+            )
             query.paginate(
                 page,
-                products_per_page,
+                products_p_page,
             )
 
         else:
             print()
             print("Vous êtes à la dernière page ;).")
-            query = self.display_products(cat_choice, page, products_per_page)
+            query = self.display_products(
+                cat_choice,
+                page,
+                products_p_page,
+                n_of_pages,
+            )
             query.paginate(
                 page,
-                products_per_page,
+                products_p_page,
             )
 
-    def previous_page(self, cat_choice, page, products_per_page, number_of_pages):
+    def previous_page(self, cat_choice, page, products_p_page, n_of_pages):
         """
         If the current page isn't 1, gets previous page.
         """
         if page > 1:
             page -= 1
-            query = self.display_products(cat_choice, page, products_per_page)
+            query = self.display_products(
+                cat_choice,
+                page,
+                products_p_page,
+                n_of_pages,
+            )
 
             query.paginate(
                 page,
-                products_per_page,
+                products_p_page,
             )
         else:
             print()
             print("Vous êtes à la première page ;).")
-            query = self.display_products(cat_choice, page, products_per_page)
+            query = self.display_products(
+                cat_choice,
+                page,
+                products_p_page,
+                n_of_pages,
+            )
 
             query.paginate(
                 page,
-                products_per_page,
+                products_p_page,
             )
-
-    def display_better_product(self, prod_choice):
-        # get nutri grade of chosen product
-        cur_product = Products.get(
-            Products.id == prod_choice
-        )
-
-        # if nutri_grade = a, give a similar grade product
-        # else give a product with a better nutrigrade
-        if cur_product.nutri_grade == "a":
-            substitute_query = Products.select().where(
-                Products.nutri_grade == cur_product.nutri_grade,
-                Products.cat_id == cur_product.cat_id).order_by(
-                fn.Rand()
-            ).limit(1)
-
-        else:
-            substitute_query = Products.select().where(
-                Products.nutri_grade < cur_product.nutri_grade,
-                Products.cat_id == cur_product.cat_id).order_by(
-                fn.Rand()
-            ).limit(1)
-
-        for product in substitute_query:
-            print()
-            print("Voici le substitut proposé :")
-            print("-" * 28)
-            print(
-                "Nom :", product.name, "/ nutri grade :", product.nutri_grade
-            )
-
-            # print brands and stores if defined
-            brands = (Brands.select().join(Productsbrands).join(
-                Products
-            ).where(Products.id == product.id))
-            for brand in brands:
-                print("Marques :", brand.name)
-            stores = (Stores.select().join(Productsstores).join(
-                Products
-            ).where(Products.id == product.id))
-            for store in stores:
-                print("Magasin :", store.name)
-            # OFF url
-            print("URL OpenFoodFacts :", product.url)
-            print()
-            print("-" * 33)
-            print("Voulez-vous l'enregistrer ? (o/n)")
-
-            save_fav = input(" >> ")
-
-            if save_fav.lower() == "o":
-                pass
-
-            elif save_fav.lower() == "n":
-                pass
-
-            else:
-                print('Veuillez entrer "o" ou "n"')
-
-    def add_favs(self):
-        pass
-
-    def remove_favs(self):
-        pass
-
-    def display_favs(self):
-        get_favs = Favorites.select()
-        count_favs = Favorites.select().count()
-        if count_favs == 0:
-            print("Vous n'avez pas encore enregistré de favoris.")
-        else:
-            print(get_favs.product, get_favs.substitute)
 
     menu_actions = {
         'main_menu': main_menu,
@@ -306,4 +542,5 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
 
 if __name__ == "__main__":
+    colors()
     menu = Menu()
