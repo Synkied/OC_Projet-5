@@ -342,7 +342,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                 print("Vous n'avez pas encore enregistré de favoris.")
             else:
                 print()
-                print("Vous avez", count_favs, "favoris.")
+                print("Vous avez", count_favs, "favori(s).")
                 print("Les voici :")
                 print("-" * 30)
 
