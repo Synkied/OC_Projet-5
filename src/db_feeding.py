@@ -251,16 +251,23 @@ tables = [
 
 file = "../db_file.csv"
 
-dbf = DBFeed(file, headers_list)
 
-dbf.fill_categories("main_category_fr")
+def main():
 
-dbf.fill_stores("stores")
+    dbf = DBFeed(file, headers_list)
 
-dbf.fill_brands("brands")
+    dbf.fill_categories("main_category_fr")
 
-dbf.fill_products()
+    dbf.fill_stores("stores")
 
-dbf.fill_productsbrands()
+    dbf.fill_brands("brands")
 
-dbf.fill_productsstores()
+    dbf.fill_products()
+
+    dbf.fill_productsbrands()
+
+    dbf.fill_productsstores()
+
+
+if __name__ == "__main__":
+    main()

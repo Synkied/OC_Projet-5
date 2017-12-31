@@ -1,3 +1,5 @@
+from sys import platform as _platform
+
 import pandas as pd
 
 
@@ -24,15 +26,25 @@ class CSVCleaner():
         # reads the specified file.
         # sep: csv file's separator
         # low_memory: avoiding unnecessary warning msgs
-        csv_file = pd.read_csv(
-            fname,
-            sep=";",
-            encoding="Latin-1",
-            low_memory=False,
-            thousands=',',
-        )
+        if (_platform == "linux" or
+                _platform == "linux2" or
+                _platform == "darwin"):
+            csv_file = pd.read_csv(
+                fname,
+                sep=";",
+                encoding="utf-16",
+                low_memory=False,
+                thousands=',',
+            )
 
-        print(csv_file)
+        elif _platform == "win32" or _platform == "win64":
+            csv_file = pd.read_csv(
+                fname,
+                sep=";",
+                encoding="Latin-1",
+                low_memory=False,
+                thousands=',',
+            )
 
         # defines a dataframe, from the passed headers
         df = csv_file[headers]
@@ -45,6 +57,8 @@ class CSVCleaner():
             df['countries_fr'].isin(countries) & df['product_name'].notnull() &
             df['nutrition_grade_fr'].notnull()
         ]
+
+        print("Nettoyage du fichier CSV en cours...")
 
         # save the new file to a csv file, with the name "db_file.csv"
         new_f.to_csv(
@@ -91,6 +105,8 @@ categories_list = [
 countries_list = ["France"]
 
 
-new_csv = CSVCleaner("../fr.openfoodfacts.org.products-2.csv")
+if __name__ == "__main__":
 
-new_csv.csv_cleaner(headers_list, categories_list, countries_list)
+    new_csv = CSVCleaner("../fr.openfoodfacts.org.products.csv")
+
+    new_csv.csv_cleaner(headers_list, categories_list, countries_list)
