@@ -1,6 +1,8 @@
 import configparser
+import io
 # import argparse
 
+from constants import *
 
 # def config_parse_args():
 
@@ -10,8 +12,11 @@ import configparser
 
 
 def config_write(cfg_fname):
-    user = input("Saisissez votre nom d'utilisateur MySQL: ")
-    pwd = input("Saisissez votre mot de passe MySQL: ")
+    user, pwd = "", ""
+    while user == "":
+        user = input("Saisissez votre nom d'utilisateur MySQL: ")
+    while pwd == "":
+        pwd = input("Saisissez votre mot de passe MySQL: ")
     config = configparser.ConfigParser()
     config["MySQL"] = {
         'db': 'openfoodfacts_oc',
@@ -25,7 +30,20 @@ def config_write(cfg_fname):
 
 
 def config_read(cfg_fname):
-    # Load the configuration file
-    config = configparser.ConfigParser()
-    with open(cfg_fname, 'w') as cfgfile:
-        config.read(cfgfile)
+
+    try:
+        # Load the configuration file
+        config = configparser.ConfigParser()
+        reader = config.read(cfg_fname)
+        return reader
+
+    except io.UnsupportedOperation as notreadable:
+        print("Le fichier ne semble pas exister ou n'est pas lisible.")
+
+
+if __name__ == "__main__":
+    t = configparser.ConfigParser()
+    t.read("../" + CFG_FNAME)
+
+    for i, v in t["MySQL"].items():
+        print(i, v)

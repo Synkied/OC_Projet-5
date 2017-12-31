@@ -47,20 +47,20 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
             answer = input(" >> ")
 
             if answer == "1":
-                self.menu_actions[answer](self)
+                self.main_menu_actions[answer](self)
 
             elif answer == "2":
-                self.menu_actions[answer](self)
+                self.main_menu_actions[answer](self)
 
             elif answer == "0":
-                self.menu_actions[answer](self)
+                self.main_menu_actions[answer](self)
 
             else:
                 print()
                 print("!" * 31)
                 print("Veuillez faire un choix valide.")
                 print("!" * 31)
-                self.menu_actions['main_menu'](self)
+                self.main_menu_actions['main_menu'](self)
 
         except KeyboardInterrupt as keyinter:
             print("Au revoir, alors ! :)")
@@ -105,24 +105,61 @@ d'OpenFoodFacts ? (O/N).
 
     def get_credentials(self):
         if os.path.exists("../" + CFG_FNAME):
+            print("-" * 50)
+            print("Voici vos informations actuelles :")
             print("""Quelles informations souhaitez-vous modifier ?""")
             print("=" * 50)
-            print("1 - Télécharger et nettoyer le fichier CSV.")
-            print("2 - Entrer mes données d'authentification MySQL.")
+            print("1 - Nom d'utilisateur.")
+            print("2 - Mot de passe.")
+            print("0 - Annuler.")
             print("=" * 50)
 
         else:
             print("Création du fichier de configuration.")
             config_write("../" + CFG_FNAME)
 
+        try:
+            answer = input(" >> ")
+
+            if answer == "1":
+                self.credentials_menu_actions[answer](self, answer)
+
+            elif answer == "2":
+                self.credentials_menu_actions[answer](self, answer)
+
+            else:
+                print()
+                print("!" * 31)
+                print("Veuillez faire un choix valide.")
+                print("!" * 31)
+                self.credentials_menu_actions['credentials_menu'](self)
+
+        except KeyboardInterrupt as keyinter:
+            print("Au revoir, alors ! :)")
+            exit()
+
+    def change_config(self, answer):
+        if answer == "1":
+            print("ok1")
+
+        elif answer == "2":
+            print("ok2")
+
     """
     Menu actions, used to quickly access some funcs
     """
-    menu_actions = {
+    main_menu_actions = {
         'main_menu': main_menu,
         '1': download_file,
         '2': get_credentials,
-        '0': quit
+        '0': quit,
+    }
+
+    credentials_menu_actions = {
+        'credentials_menu': get_credentials,
+        '1': change_config,
+        '2': change_config,
+        '0': main_menu,
     }
 
 
