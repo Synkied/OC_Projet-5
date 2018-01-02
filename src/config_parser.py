@@ -1,5 +1,4 @@
 import configparser
-import io
 # import argparse
 
 from constants import *
@@ -11,12 +10,8 @@ from constants import *
 #                         """The password of your local mysql root""")
 
 
-def config_write(cfg_fname):
-    user, pwd = "", ""
-    while user == "":
-        user = input("Saisissez votre nom d'utilisateur MySQL: ")
-    while pwd == "":
-        pwd = input("Saisissez votre mot de passe MySQL: ")
+def config_write(cfg_fname, user="", pwd=""):
+
     config = configparser.ConfigParser()
     config["MySQL"] = {
         'db': 'openfoodfacts_oc',
@@ -28,17 +23,20 @@ def config_write(cfg_fname):
     with open(cfg_fname, 'w') as cfgfile:
         config.write(cfgfile)
 
+    print()
+    print("Informations enregistrées !")
 
-def config_read(cfg_fname):
 
-    try:
-        # Load the configuration file
-        config = configparser.ConfigParser()
-        reader = config.read(cfg_fname)
-        return reader
+# def config_read(cfg_fname):
 
-    except io.UnsupportedOperation as notreadable:
-        print("Le fichier ne semble pas exister ou n'est pas lisible.")
+#     try:
+#         # Load the configuration file
+#         config = configparser.ConfigParser()
+#         reader = config.read(cfg_fname)
+#         return reader
+
+#     except io.UnsupportedOperation as notreadable:
+#         print("Le fichier ne semble pas exister ou n'est pas lisible.")
 
 
 if __name__ == "__main__":
@@ -46,4 +44,4 @@ if __name__ == "__main__":
     t.read("../" + CFG_FNAME)
 
     for i, v in t["MySQL"].items():
-        print(i, v)
+        print(t["MySQL"]["user"])

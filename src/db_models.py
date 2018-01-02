@@ -1,10 +1,14 @@
+import configparser
+
 from peewee import *
 
-from config_parser import *
+from constants import *
 
-# TODO: configparser credentials ---------------------------->!!!
-db_conn = MySQLDatabase('openfoodfacts_oc', **{
-    'user': 'quentin', 'password': 'openffoc'
+config = configparser.ConfigParser()
+config.read("../" + CFG_FNAME)
+
+db_conn = MySQLDatabase(config["MySQL"]["db"], **{
+    'user': config["MySQL"]["user"], 'password': config["MySQL"]["password"]
 })
 
 
