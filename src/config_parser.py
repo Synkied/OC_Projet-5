@@ -1,3 +1,7 @@
+"""
+Launch this file if the mysql_config.ini is missing.
+"""
+
 import configparser
 # import argparse
 
@@ -10,12 +14,13 @@ from constants import *
 #                         """The password of your local mysql root""")
 
 
-def config_write(cfg_fname, user="", pwd=""):
+def config_write(cfg_fname, user="default", pwd="default"):
 
     config = configparser.ConfigParser()
+
     config["MySQL"] = {
         'db': 'openfoodfacts_oc',
-        # 'host': 'localhost',
+        'host': 'localhost',
         'user': user,
         'password': pwd,
     }
@@ -27,21 +32,11 @@ def config_write(cfg_fname, user="", pwd=""):
     print("Informations enregistrées !")
 
 
-# def config_read(cfg_fname):
-
-#     try:
-#         # Load the configuration file
-#         config = configparser.ConfigParser()
-#         reader = config.read(cfg_fname)
-#         return reader
-
-#     except io.UnsupportedOperation as notreadable:
-#         print("Le fichier ne semble pas exister ou n'est pas lisible.")
-
-
 if __name__ == "__main__":
-    t = configparser.ConfigParser()
-    t.read("../" + CFG_FNAME)
+    # t = configparser.ConfigParser()
+    # t.read("../" + CFG_FNAME)
 
-    for i, v in t["MySQL"].items():
-        print(t["MySQL"]["user"])
+    # for i, v in t["MySQL"].items():
+    #     print(t["MySQL"]["user"])
+
+    config_write("../" + CFG_FNAME)

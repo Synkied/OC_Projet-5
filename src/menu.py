@@ -39,13 +39,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         try:
             answer = input(" >> ")
 
-            if answer == "1":
-                self.menu_actions[answer](self)
-
-            elif answer == "2":
-                self.menu_actions[answer](self)
-
-            elif answer == "0":
+            if answer in self.menu_actions.keys():
                 self.menu_actions[answer](self)
 
             else:
@@ -421,13 +415,13 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
     def edit_favs(self, favorites_ids):
         print()
         print(
-            "Choisissez un favori à supprimer ou (n) \
+            "Choisissez un favori à supprimer ou (m) \
 pour retourner au menu principal."
         )
         edit_fav_choice = input(" >> ")
 
         try:
-            if edit_fav_choice.lower() == "n":
+            if edit_fav_choice.lower() == "m":
                 print("Retour au menu principal.")
                 self.menu_actions['main_menu'](self)
 

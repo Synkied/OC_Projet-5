@@ -162,10 +162,6 @@ class DBFeed():
                 salt=product["salt_100g"],
             )
 
-    def fill_productsbrands(self):
-        # fill with ids of products and brands
-        products_dict = csv_to_dict(self.file_name, self.headers)
-
         # this loop gets all dicts in the products_dict list.
         # for each dict if the brands value is not None,
         # for each brand, get or create the productsbrands table
@@ -189,11 +185,6 @@ class DBFeed():
                         ).id
                     )
 
-        # #can be relocated in fill_products()
-
-    def fill_productsstores(self):
-        products_dict = csv_to_dict(self.file_name, self.headers)
-
         # this loop gets all dicts in the products_dict list.
         # for each dict if the brands value is not None,
         # for each store, get or create the productsstores table
@@ -216,10 +207,6 @@ class DBFeed():
                             Products.name == dic["product_name"]
                         ).id
                     )
-        # #can be relocated in fill_products()
-
-    # def fill_favs(self):
-    #     pass
 
 
 headers_list = [
@@ -263,10 +250,6 @@ def main():
     dbf.fill_brands("brands")
 
     dbf.fill_products()
-
-    dbf.fill_productsbrands()
-
-    dbf.fill_productsstores()
 
 
 if __name__ == "__main__":

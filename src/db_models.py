@@ -1,20 +1,38 @@
+"""
+This file contains the peewee database models for the OFF OC project.
+It was auto-converted from a .mysql file using pwiz.
+http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#pwiz
+
+The MySQL file itself was generated from a schema made in MySQLWorkBench.
+https://dev.mysql.com/doc/workbench/en/wb-forward-engineering-sql-scripts.html
+"""
+
 import configparser
+import os.path
 
 from peewee import *
 
 from constants import *
+from config_parser import *
+
+
+# Create the config file if it does not exist.
+# Had to put this here because this module is imported in install.py
+if not os.path.exists("../" + CFG_FNAME):
+    config_write("../" + CFG_FNAME)
 
 config = configparser.ConfigParser()
 config.read("../" + CFG_FNAME)
 
-db_conn = MySQLDatabase(config["MySQL"]["db"], **{
+
+openfoodfacts_db = MySQLDatabase(config["MySQL"]["db"], **{
     'user': config["MySQL"]["user"], 'password': config["MySQL"]["password"]
 })
 
 
 class BaseModel(Model):
     class Meta:
-        database = db_conn
+        database = openfoodfacts_db
 
 
 class Brands(BaseModel):
@@ -43,7 +61,7 @@ class Products(BaseModel):
     cat = ForeignKeyField(
         db_column='cat_id', rel_model=Categories, to_field='id'
     )
-    code = IntegerField(unique=True)
+    code = BigIntegerField()
     energy = IntegerField(null=True)
     fat = FloatField(null=True)
     fibers = FloatField(null=True)

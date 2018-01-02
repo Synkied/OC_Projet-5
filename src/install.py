@@ -1,9 +1,19 @@
 import os.path
 
+import pymysql
+import peewee
+from colorama import init
+from termcolor import colored
+
 from csv_downloader import TqdmDL
 from config_parser import *
 from csv_cleaner import *
 from constants import *
+from db_models import *
+from db_feeding import *
+
+
+init()  # inits colorama
 
 
 class InstallMenu():
@@ -31,24 +41,21 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
         Asks what the user wants to do.
         """
         print()
-        print("=" * 50)
+        print("*" * 50)
         print("Menu principal".upper().center(50))
-        print("=" * 50)
-        print("1 - Télécharger et nettoyer le fichier CSV.")
-        print("2 - Entrer ses données d'authentification MySQL.")
+        print("*" * 50)
+        print("1 - Télécharger le fichier CSV.")
+        print("2 - Nettoyer le fichier CSV.")
+        print("3 - Entrer ses données d'authentification MySQL.")
+        print("4 - Créer la base de données MySQL.")
+        print("5 - Peupler la base de données MySQL.")
         print("0 - Quitter l'application.")
         print()
         print("Saisissez votre choix : ")
         try:
             answer = input(" >> ")
 
-            if answer == "1":
-                self.main_menu_actions[answer](self)
-
-            elif answer == "2":
-                self.main_menu_actions[answer](self)
-
-            elif answer == "0":
+            if answer in self.main_menu_actions.keys():
                 self.main_menu_actions[answer](self)
 
             else:
@@ -69,7 +76,7 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
         print("Bye bye !")
         exit()
 
-    def download_clean_file(self):
+    def download_file(self):
         """
         Downloads the openfoodfacts csv file and cleans it right away,
         to get a file to work with.
@@ -91,14 +98,6 @@ d'OpenFoodFacts ? (o/n).
                     CSV_FNAME,
                 )
 
-                # clean the csv file
-                csv_file = CSVCleaner(dl_file)
-                csv_file.csv_cleaner(
-                    headers_list,
-                    categories_list,
-                    countries_list,
-                )
-
             elif dl_answer.lower() == "n":
                 self.main_menu_actions['main_menu'](self)
 
@@ -111,6 +110,15 @@ d'OpenFoodFacts ? (o/n).
         except KeyboardInterrupt as keyinter:
             print("Au revoir, alors!")
 
+    def clean_file(self):
+        # clean the csv file
+        csv_file = CSVCleaner(dl_file)
+        csv_file.csv_cleaner(
+            headers_list,
+            categories_list,
+            countries_list,
+        )
+
     def get_or_change_credentials(self):
         """
         If the config file exists, asks if the user wants to change
@@ -120,13 +128,13 @@ d'OpenFoodFacts ? (o/n).
         if os.path.exists("../" + CFG_FNAME):
             print("-" * 50)
             print("Voici vos informations actuelles :")
-            self.config.read("../" + CFG_FNAME)
+            config.read("../" + CFG_FNAME)
             print(
                 "Nom d'utilisateur :",
-                self.config["MySQL"]["user"],
+                config["MySQL"]["user"],
                 " /",
                 "Mot de passe :",
-                self.config["MySQL"]["password"]
+                config["MySQL"]["password"]
             )
             print()
             print("Quelles informations souhaitez-vous modifier ?")
@@ -147,7 +155,7 @@ d'OpenFoodFacts ? (o/n).
 
                 elif answer == "2":
                     password = input(
-                        "Tapez votre nouveau nom d'utilisateur : "
+                        "Tapez votre nouveau mot de passe : "
                     )
                     self.credentials_menu_actions[answer](self, password)
 
@@ -182,7 +190,7 @@ d'OpenFoodFacts ? (o/n).
         config_write(
             "../" + CFG_FNAME,
             user=username,
-            pwd=self.config["MySQL"]["password"],
+            pwd=config["MySQL"]["password"],
         )
         self.main_menu_actions['main_menu'](self)
 
@@ -193,17 +201,107 @@ d'OpenFoodFacts ? (o/n).
         config_write(
             "../" + CFG_FNAME,
             pwd=password,
-            user=self.config["MySQL"]["user"],
+            user=config["MySQL"]["user"],
         )
         self.main_menu_actions['main_menu'](self)
+
+    def create_db(self):
+        """
+        Creates the database using the config file
+        """
+        config.read("../" + CFG_FNAME)
+        try:
+            connection = pymysql.connect(
+                host=config["MySQL"]["host"],
+                user=config["MySQL"]["user"],
+                password=config["MySQL"]["password"],
+                charset="utf8",
+            )
+
+            try:
+                cursor = connection.cursor()
+                create_db_query = "CREATE DATABASE " + config["MySQL"]["db"] + " CHARACTER SET 'utf8'"
+
+                cursor.execute(create_db_query)
+
+                print()
+                print("Base de données créée !")
+                print()
+
+            except Exception as e:
+
+                print("Une exception s'est produite : \n{}".format(e))
+
+            finally:
+                connection.close()  # close pymysql connection
+
+                openfoodfacts_db.connect()  # open peewee connection
+                openfoodfacts_db.create_tables(
+                    [
+                        Brands,
+                        Categories,
+                        Stores,
+                        Products,
+                        Favorites,
+                        Productsbrands,
+                        Productsstores,
+                    ]
+                )
+                print("Tables créées !")
+                print()
+                self.main_menu_actions['main_menu'](self)
+
+        except pymysql.err.OperationalError as operr:
+            print()
+            print("!" * 83)
+            print("Veuillez renseigner des identifiants corrects \
+ou lancer MySQL sur votre ordinateur.\
+\nVoici le message original :\n\n", colored("{}".format(operr), "red"))
+            print("!" * 83)
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+    def populate_db(self):
+        """
+        Populates the db from a csv file.
+        """
+        print()
+        print("Remplissage de la base de données...")
+        try:
+            dbf = DBFeed(file, headers_list)
+
+            dbf.fill_categories("main_category_fr")
+
+            dbf.fill_stores("stores")
+
+            dbf.fill_brands("brands")
+
+            dbf.fill_products()
+
+            print()
+            print("Base de données remplie ! Vous pouvez maintenant utiliser \
+menu.py pour utiliser l'application.")
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except peewee.OperationalError as operr:
+            print()
+            print("Il semblerait que vous n'ayez pas lancé MySQL \
+ou mal renseigné vos informations de connexion. Voici le message original :\
+\n\n", colored("{}".format(operr), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
 
     """
     Main menu actions, used to quickly access some funcs
     """
     main_menu_actions = {
         'main_menu': main_menu,
-        '1': download_clean_file,
-        '2': get_or_change_credentials,
+        '1': download_file,
+        '2': clean_file,
+        '3': get_or_change_credentials,
+        '4': create_db,
+        '5': populate_db,
         '0': quit,
     }
 
