@@ -6,6 +6,11 @@ This project's development has to be documentation-driven, so the different clas
 
 ## Installation (MacOS):
 
+### Python 3
+
+Install from : https://www.python.org/downloads/
+Preferably choose Python 3.6.3
+
 ### Virtualenv and VirtualenvWrapper
 
 ```sh
@@ -27,31 +32,29 @@ source .local/bin/virtualenvwrapper.sh
 
 And finally reload this file :
 
-```source ~/.profile```
-
-### Install Python 3.6.0
-
-```sh
-wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
-tar -xvzf Python-3.6.0
-cd Python-3.6.0
-sudo ./configure
-sudo make install
-cd ..
-rm Python-3.6.0.tgz
-rm -rf Python-3.6.0
+```sh 
+source ~/.profile
 ```
 
-## Initialize the database:
+## Database creation:
+
+### MySQL and install.py
 
 1. Install MySQL for your OS : https://dev.mysql.com/downloads/mysql/#downloads
 2. Set your root password or create a new MySQL user.
 3. Clone this repo.
-4. Do ```sh $ pip install -r requirements.txt``` 
-5. Use "Install.py" and do every step, from step 1 to step 5.
+4. Do ```$ workon {your_virtual_env}``` where {your_virtual_env} is the name of your virtual environment.
+5. Do ```$ cd {path/to/this_repo}``` where {this_repo} is the name of this repo, and {path/to/} is where you chose to put it on your computer.
+5. Do ```$ pip install -r requirements.txt``` 
+6. Use "../src/install.py" and do every step, from step 1 to step 5.
 Step 1 may take some time depending on your connection. You can also direct download from OpenFoodFacts : https://world.openfoodfacts.org/data/fr.openfoodfacts.org.products.csv.
 !! If you direct download the csv file, place it in the root folder of this project (OC_Projet-5) !!
-6. You can now use "menu.py" and search for products. Substitutes will be displayed to you, you can save them.
+To stop the download from the terminal, use <kbd>CTRL</kbd>+<kbd>C</kbd>.
+7. You can now use the app.
 
-## 
+## Using the app
 
+### menu.py
+
+To use the app, simply do from a terminal : ```$ python menu.py```
+Then follow along the steps.

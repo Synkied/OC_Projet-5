@@ -1,9 +1,11 @@
 # coding: utf8
-
 import math
+
 from colorama import init
 from termcolor import colored
 from terminaltables import AsciiTable
+from peewee import *
+import pymysql
 
 from db_models import *
 
@@ -108,6 +110,15 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             print("Au revoir, alors ! :)")
             exit()
 
+        except InternalError as peweeie:
+            print()
+            print("!" * 83)
+            print("Un problème est survenu.\
+\nVoici le message original :\n\n", colored("{}".format(peweeie), "red"))
+            print("!" * 83)
+            print()
+            self.menu_actions['main_menu'](self)
+
     def display_products(self, cat_choice, page, products_p_page, n_of_pages):
         """
         display products in the terminal.
@@ -201,6 +212,15 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         except KeyboardInterrupt as keyinter:
             print("Au revoir, alors ! :)")
             exit()
+
+        except InternalError as pie:
+            print()
+            print("!" * 83)
+            print("Un problème est survenu.\
+\nVoici le message original :\n\n", colored("{}".format(pie), "red"))
+            print("!" * 83)
+            print()
+            self.menu_actions['main_menu'](self)
 
         # returns query to be able to display next and previous pages
         return query
@@ -316,24 +336,25 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         This function uses colorclass to color the terminal
         It also uses terminaltables to display the data as tables.
         """
-        favorites = Favorites.select()
-        count_favs = Favorites.select().count()
-
-        product_data = [
-            [
-                'id',
-                colored('Produit substitué', 'red'),
-                colored('Marque(s)', 'yellow'),
-                colored('Magasin(s)', 'yellow'),
-                colored('Substituant', 'green'),
-                colored('Marque(s)', 'yellow'),
-                colored('Magasin(s)', 'yellow'),
-            ]
-        ]
-
-        product_table = AsciiTable(product_data)
 
         try:
+            favorites = Favorites.select()
+            count_favs = Favorites.select().count()
+
+            product_data = [
+                [
+                    'id',
+                    colored('Produit substitué', 'red'),
+                    colored('Marque(s)', 'yellow'),
+                    colored('Magasin(s)', 'yellow'),
+                    colored('Substituant', 'green'),
+                    colored('Marque(s)', 'yellow'),
+                    colored('Magasin(s)', 'yellow'),
+                ]
+            ]
+
+            product_table = AsciiTable(product_data)
+
             if count_favs == 0:
                 print("Vous n'avez pas encore enregistré de favoris.")
             else:
@@ -409,6 +430,24 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                 print(product_table.table)
 
                 self.edit_favs(favorites_ids)
+
+        except pymysql.err.InternalError as pymysqlie:
+            print()
+            print("!" * 83)
+            print("Un problème est survenu.\
+\nVoici le message original :\n\n", colored("{}".format(pymysqlie), "red"))
+            print("!" * 83)
+            print()
+            self.menu_actions['main_menu'](self)
+
+        except InternalError as peweeie:
+            print()
+            print("!" * 83)
+            print("Un problème est survenu.\
+\nVoici le message original :\n\n", colored("{}".format(peweeie), "red"))
+            print("!" * 83)
+            print()
+            self.menu_actions['main_menu'](self)
 
         except KeyboardInterrupt as keyinter:
             print("Au revoir, alors ! :)")

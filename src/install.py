@@ -245,12 +245,16 @@ d'OpenFoodFacts ? (o/n).
                 cursor.execute(create_db_query)
 
                 print()
-                print("Base de données créée !")
+                print(colored("Base de données créée !", "green"))
                 print()
 
             except Exception as e:
 
-                print("Une exception s'est produite : \n{}".format(e))
+                print(
+                    "Une exception s'est produite : \n",
+                    colored("{}".format(e), "red")
+                )
+                self.main_menu_actions['main_menu'](self)
 
             else:
                 connection.close()  # close pymysql connection
@@ -267,7 +271,7 @@ d'OpenFoodFacts ? (o/n).
                         Productsstores,
                     ]
                 )
-                print("Tables créées !")
+                print(colored("Tables créées !", "green"))
                 print()
                 self.main_menu_actions['main_menu'](self)
 
@@ -312,9 +316,15 @@ menu.py pour utiliser l'application.")
 
         except peewee.OperationalError as operr:
             print()
-            print("Il semblerait que vous n'ayez pas lancé MySQL \
-ou mal renseigné vos informations de connexion. Voici le message original :\
+            print("Une erreur s'est produite :\
 \n\n", colored("{}".format(operr), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except FileNotFoundError as fnferr:
+            print()
+            print("Il semblerait que le fichier " + file + " n'existe pas :\
+\n\n", colored("{}".format(fnferr), "red"))
             print()
             self.main_menu_actions['main_menu'](self)
 

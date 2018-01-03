@@ -1,7 +1,7 @@
 # coding: utf8
 
 """
-Launch this file if the mysql_config.ini is missing.
+Execute this file from a terminal if mysql_config.ini is missing.
 """
 
 import configparser
