@@ -1,3 +1,5 @@
+# coding: utf8
+
 import math
 from colorama import init
 from termcolor import colored

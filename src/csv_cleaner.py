@@ -1,3 +1,5 @@
+# coding: utf8
+
 from sys import platform as _platform
 
 import pandas as pd

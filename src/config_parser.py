@@ -1,3 +1,5 @@
+# coding: utf8
+
 """
 Launch this file if the mysql_config.ini is missing.
 """

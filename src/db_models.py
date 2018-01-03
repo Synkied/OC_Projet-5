@@ -1,3 +1,5 @@
+# coding: utf8
+
 """
 This file contains the peewee database models for the OFF OC project.
 It was auto-converted from a .mysql file using pwiz.
