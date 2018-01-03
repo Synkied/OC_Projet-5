@@ -1,6 +1,8 @@
 import pandas as pd
 from peewee import *
+
 from db_models import *
+from constants import *
 
 
 # #####--- FUNCTIONS ----##### #
@@ -209,39 +211,12 @@ class DBFeed():
                     )
 
 
-headers_list = [
-    "code",
-    "url",
-    "product_name",
-    "brands",
-    "stores",
-    "nutrition_grade_fr",
-    "main_category_fr",
-    "energy_100g",
-    "fat_100g",
-    "carbohydrates_100g",
-    "sugars_100g",
-    "fiber_100g",
-    "proteins_100g",
-    "salt_100g",
-]
-
-
-tables = [
-    Categories,
-    Products,
-    Stores,
-    Brands,
-    Favorites
-
-]
-
 file = "../db_file.csv"
 
 
 def main():
 
-    dbf = DBFeed(file, headers_list)
+    dbf = DBFeed(file, HEADERS_LIST)
 
     dbf.fill_categories("main_category_fr")
 

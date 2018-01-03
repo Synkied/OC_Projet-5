@@ -112,12 +112,21 @@ d'OpenFoodFacts ? (o/n).
 
     def clean_file(self):
         # clean the csv file
-        csv_file = CSVCleaner(dl_file)
-        csv_file.csv_cleaner(
-            headers_list,
-            categories_list,
-            countries_list,
-        )
+        try:
+            csv_file = CSVCleaner("../" + CSV_FNAME)
+            csv_file.csv_cleaner(
+                HEADERS_LIST,
+                CATEGORIES_LIST,
+                COUNTRIES_LIST,
+            )
+        except FileNotFoundError as fnferr:
+            print()
+            print("!" * 63)
+            print("Le fichier n'a pas été trouvé.\
+\nVoici le message original :\n\n", colored("{}".format(fnferr), "red"))
+            print("!" * 63)
+            print()
+            self.main_menu_actions['main_menu'](self)
 
     def get_or_change_credentials(self):
         """
@@ -141,7 +150,7 @@ d'OpenFoodFacts ? (o/n).
             print("=" * 50)
             print("1 - Modifier nom d'utilisateur.")
             print("2 - Modifier mot de passe.")
-            print("0 - Annuler.")
+            print("0 - Retour au menu principal.")
             print("=" * 50)
 
             try:
@@ -181,7 +190,7 @@ d'OpenFoodFacts ? (o/n).
             while pwd == "":
                 pwd = input("Saisissez votre mot de passe MySQL: ")
             config_write("../" + CFG_FNAME, user, pwd)
-            self.main_menu()
+            self.credentials_menu_actions["credentials_menu"](self)
 
     def change_username(self, username):
         """
@@ -192,7 +201,7 @@ d'OpenFoodFacts ? (o/n).
             user=username,
             pwd=config["MySQL"]["password"],
         )
-        self.main_menu_actions['main_menu'](self)
+        self.credentials_menu_actions['credentials_menu'](self)
 
     def change_password(self, password):
         """
@@ -203,7 +212,7 @@ d'OpenFoodFacts ? (o/n).
             pwd=password,
             user=config["MySQL"]["user"],
         )
-        self.main_menu_actions['main_menu'](self)
+        self.credentials_menu_actions['credentials_menu'](self)
 
     def create_db(self):
         """
@@ -211,6 +220,10 @@ d'OpenFoodFacts ? (o/n).
         """
         config.read("../" + CFG_FNAME)
         try:
+            """
+            Connects to the database using pymysql.
+            Used to create the db from python.
+            """
             connection = pymysql.connect(
                 host=config["MySQL"]["host"],
                 user=config["MySQL"]["user"],
@@ -219,6 +232,9 @@ d'OpenFoodFacts ? (o/n).
             )
 
             try:
+                """
+                Creates the db using a mysql injector in python.
+                """
                 cursor = connection.cursor()
                 create_db_query = "CREATE DATABASE " + config["MySQL"]["db"] + " CHARACTER SET 'utf8'"
 
@@ -232,7 +248,7 @@ d'OpenFoodFacts ? (o/n).
 
                 print("Une exception s'est produite : \n{}".format(e))
 
-            finally:
+            else:
                 connection.close()  # close pymysql connection
 
                 openfoodfacts_db.connect()  # open peewee connection
@@ -261,6 +277,16 @@ ou lancer MySQL sur votre ordinateur.\
             print()
             self.main_menu_actions['main_menu'](self)
 
+        except KeyError as kerr:
+            print()
+            print("!" * 83)
+            print("Il semblerait qu'une information manque au sein du fichier\
+de configuration mysql_config.ini.\
+\nVoici le message original :\n\n", colored("{}".format(kerr), "red"))
+            print("!" * 83)
+            print()
+            self.main_menu_actions['main_menu'](self)
+
     def populate_db(self):
         """
         Populates the db from a csv file.
@@ -268,14 +294,10 @@ ou lancer MySQL sur votre ordinateur.\
         print()
         print("Remplissage de la base de données...")
         try:
-            dbf = DBFeed(file, headers_list)
-
+            dbf = DBFeed(file, HEADERS_LIST)
             dbf.fill_categories("main_category_fr")
-
             dbf.fill_stores("stores")
-
             dbf.fill_brands("brands")
-
             dbf.fill_products()
 
             print()

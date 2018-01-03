@@ -1,4 +1,5 @@
 import requests
+import csv
 
 from tqdm import tqdm  # shows a progress bar
 
@@ -21,11 +22,15 @@ class TqdmDL(tqdm):
 
         dwnld = requests.get(url, stream=True)
 
+        # defines encoding, because not provided by OpenFoodFacts
+        dwnld.encoding = "utf-8"
+
         # Total size in bytes.
         chunk_size = 32 * 1024
         total_size = (int(dwnld.headers.get('content-length', 0)))
 
-        with open(directory + fname, 'wb') as f:
+        # write to utf-16, for foreign chars
+        with open(directory + fname, 'w', encoding="utf-16") as f:
             pbar = tqdm(dwnld.iter_content(
                 chunk_size=chunk_size,
                 decode_unicode=True),
@@ -43,4 +48,4 @@ class TqdmDL(tqdm):
 if __name__ == "__main__":
     t = TqdmDL()
 
-    t.download_from_url(CSV_URL, CSV_DIR, CSV_FNAME)
+    t.download_from_url(CSV_URL, "../", CSV_FNAME)

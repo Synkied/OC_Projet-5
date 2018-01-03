@@ -1,4 +1,4 @@
-# import pandas as pd
+import pandas as pd
 
 
 # # # def test_csv(file, headers):
@@ -83,14 +83,31 @@
 # # #         print(j)
 
 
-# def download_csv_openfoodfacts():
-#     csv_url = "https://world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv"
+# import requests
+# from contextlib import closing
+# import csv
+# import codecs
 
-#     data = pd.read_csv(csv_url, encoding="utf-16", sep="\t")
+# import pandas as pd
 
-#     print("Download in progress...")
+# from io import StringIO
 
-#     data.to_csv("test.csv", index=False, encoding="utf-16", sep=";")
+# from constants import *
+# from tqdm import tqdm, tqdm_pandas
 
 
-# download_csv_openfoodfacts()
+
+# # url = "https://world.openfoodfacts.org/data/fr.openfoodfacts.org.products.csv"
+
+# # with closing(requests.get(url, stream=True)) as r:
+# #     reader = csv.reader(codecs.iterdecode(r.iter_lines(), encoding='utf-8'), delimiter='\t', quotechar='"')
+# #     with open("../fr.openfoodfacts.org.products.csv", "w", encoding="utf-16") as f:
+# #         test = csv.writer(f, delimiter="\t", lineterminator="\n", quotechar='"')
+# #         for row in reader:
+# #             # print(row)
+# #             # test.writerow(row.replace('\t', ','))
+# #             test.writerow(row)
+
+# t = pd.read_csv("../fr.openfoodfacts.org.products.csv", encoding="utf-16", sep="\t", nrows=4)
+
+# print(t)

@@ -2,18 +2,15 @@ from sys import platform as _platform
 
 import pandas as pd
 
+from constants import *
+
 
 class CSVCleaner():
-
-    # #TODO: RAISE ERRORS ---------------------------->!!!
-    # code: puissances
 
     def __init__(self, file_name):
         self.file_name = file_name
 
     def csv_cleaner(self, headers, categories=[], countries=[]):
-
-        # ## TODO: DETECT OS FOR ENCODING ---------------------------->!!!
         """
         Cleans the csv passed to the instanciation of the class.
         headers: a list of headers that must be in the file.
@@ -23,6 +20,8 @@ class CSVCleaner():
         """
         fname = self.file_name
 
+        print("Nettoyage du fichier CSV en cours...")
+
         # reads the specified file.
         # sep: csv file's separator
         # low_memory: avoiding unnecessary warning msgs
@@ -31,7 +30,7 @@ class CSVCleaner():
                 _platform == "darwin"):
             csv_file = pd.read_csv(
                 fname,
-                sep=";",
+                sep="\t",
                 encoding="utf-16",
                 low_memory=False,
                 thousands=',',
@@ -40,8 +39,8 @@ class CSVCleaner():
         elif _platform == "win32" or _platform == "win64":
             csv_file = pd.read_csv(
                 fname,
-                sep=";",
-                encoding="Latin-1",
+                sep="\t",
+                encoding="utf-16",
                 low_memory=False,
                 thousands=',',
             )
@@ -58,8 +57,6 @@ class CSVCleaner():
             df['nutrition_grade_fr'].notnull()
         ]
 
-        print("Nettoyage du fichier CSV en cours...")
-
         # save the new file to a csv file, with the name "db_file.csv"
         new_f.to_csv(
             "../db_file.csv",
@@ -69,44 +66,8 @@ class CSVCleaner():
         )
 
 
-headers_list = [
-    "code",
-    "url",
-    "product_name",
-    "brands",
-    "stores",
-    "nutrition_grade_fr",
-    "main_category_fr",
-    "energy_100g",
-    "fat_100g",
-    "carbohydrates_100g",
-    "sugars_100g",
-    "fiber_100g",
-    "proteins_100g",
-    "salt_100g",
-    'countries_fr',
-]
-
-categories_list = [
-    'Petit-déjeuners',
-    'Chips et frites',
-    'Soupes',
-    'Biscuits',
-    'Jus de fruits 100% pur jus',
-    'Jus de pomme',
-    "Jus d'orange 100% pur jus",
-    'Jus de fruits',
-    'Jus de fruits à base de concentré',
-    "Jus d'orange",
-    "Jus d'orange à base de concentré",
-    'Jus de pamplemousse',
-]
-
-countries_list = ["France"]
-
-
 if __name__ == "__main__":
 
     new_csv = CSVCleaner("../fr.openfoodfacts.org.products.csv")
 
-    new_csv.csv_cleaner(headers_list, categories_list, countries_list)
+    new_csv.csv_cleaner(HEADERS_LIST, CATEGORIES_LIST, COUNTRIES_LIST)
