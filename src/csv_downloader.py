@@ -1,7 +1,6 @@
 # coding: utf8
 
 import requests
-import csv
 
 from tqdm import tqdm  # shows a progress bar
 

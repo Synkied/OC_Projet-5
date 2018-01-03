@@ -16,7 +16,7 @@ from constants import *
 #                         """The password of your local mysql root""")
 
 
-def config_write(cfg_fname, user="default", pwd="default"):
+def config_write(cfg_fname, user="root", pwd="root"):
 
     config = configparser.ConfigParser()
 

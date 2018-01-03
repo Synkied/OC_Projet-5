@@ -121,6 +121,8 @@ d'OpenFoodFacts ? (o/n).
                 CATEGORIES_LIST,
                 COUNTRIES_LIST,
             )
+            self.main_menu_actions['main_menu'](self)
+
         except FileNotFoundError as fnferr:
             print()
             print("!" * 63)
