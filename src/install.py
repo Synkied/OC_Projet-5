@@ -105,6 +105,7 @@ This may take several minutes, depending on your connection.""")
                     "../",
                     CSV_FNAME,
                 )
+                self.main_menu_actions['main_menu'](self)
 
             elif dl_answer.lower() == "n":
                 self.main_menu_actions['main_menu'](self)
@@ -246,8 +247,11 @@ This may take several minutes, depending on your connection.""")
                 Creates the db using a mysql injector in python.
                 """
                 cursor = connection.cursor()
-                create_db_query = "CREATE DATABASE " + config["MySQL"]["db"]
-                + " CHARACTER SET 'utf8'"
+                create_db_query = (
+                    "CREATE DATABASE " +
+                    config["MySQL"]["db"] +
+                    " CHARACTER SET 'utf8'"
+                )
 
                 cursor.execute(create_db_query)
 
@@ -306,7 +310,7 @@ or make sure MySQL is running on your computer.\
         Populates the db from a csv file.
         """
         print()
-        print("Filling database...")
+        print("Filling database... Please wait...")
         try:
             dbf = DBFeed(file, HEADERS_LIST)
             dbf.fill_categories("main_category_fr")
