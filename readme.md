@@ -4,11 +4,11 @@ The aim of this project is to query the OpenFoodFacts (OFF) API in order to popu
 
 This project's development has to be documentation-driven, so the different classes will be detailed in this README.
 
-## Installation (MacOS):
+## Installation:
 
 ### Python 3
 
-Install from : https://www.python.org/downloads/
+Install from : https://www.python.org/downloads/  
 Preferably choose Python 3.6.3
 
 ### Virtualenv and VirtualenvWrapper
@@ -18,6 +18,7 @@ pip install --user virtualenv
 pip install --user virtualenvwrapper
 ```
 
+#### Unix
 After the installation it's time to add theses lines in ```~/.profile``` (maybe ```~/.bashrc``` or ```~/.bash_profile```)
 
 ```sh
@@ -48,7 +49,8 @@ source ~/.profile
 5. Do ```$ pip install -r requirements.txt``` 
 6. Use "../src/install.py" and do every step, from step 1 to step 5.
 Step 1 may take some time depending on your connection. You can also direct download from OpenFoodFacts : https://world.openfoodfacts.org/data/fr.openfoodfacts.org.products.csv.
-!! If you direct download the csv file, place it in the root folder of this project (OC_Projet-5) !!
+!! If you direct download the csv file, place it in the root folder of this project (OC_Projet-5) !!  
+
 To stop the download from the terminal, use <kbd>CTRL</kbd>+<kbd>C</kbd>.
 7. You can now use the app.
 
@@ -56,5 +58,5 @@ To stop the download from the terminal, use <kbd>CTRL</kbd>+<kbd>C</kbd>.
 
 ### menu.py
 
-To use the app, simply do from a terminal : ```$ python menu.py```
+To use the app, simply do from a terminal : ```$ python menu.py```  
 Then follow along the steps.

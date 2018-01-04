@@ -1,3 +1,10 @@
+"""
+Script tailored to assists users in easily downloading a file through CLI,
+initializing a MySQL db and populating it.
+
+OpenFoodFacts DB Seeker 0.1
+"""
+
 # coding: utf8
 
 import os.path
@@ -29,8 +36,8 @@ class InstallMenu():
         print("-" * 56)
         print("*" * 56)
         print(
-            """Bienvenue ! Cette application vous assiste
-dans l'installation d'OpenFoodFacts OC !""".upper()
+            """Welcome ! This script is tailored to assist you
+through the installation of OpenFoodFacts DB Seeker !""".upper()
         )
         print("*" * 56)
         print("-" * 56)
@@ -44,16 +51,16 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
         """
         print()
         print("*" * 50)
-        print("Menu principal".upper().center(50))
+        print("Main menu".upper().center(50))
         print("*" * 50)
-        print("1 - Télécharger le fichier CSV.")
-        print("2 - Nettoyer le fichier CSV.")
-        print("3 - Entrer ses données d'authentification MySQL.")
-        print("4 - Créer la base de données MySQL.")
-        print("5 - Peupler la base de données MySQL.")
-        print("0 - Quitter l'application.")
+        print("1 - Download OpenFoodFacts CSV file.")
+        print("2 - 'Clean' CSV file.")
+        print("3 - Input your personal MySQL credentials.")
+        print("4 - Create MySQL database.")
+        print("5 - Populate MySQL database.")
+        print("0 - Quit.")
         print()
-        print("Saisissez votre choix : ")
+        print("Input your choice: ")
         try:
             answer = input(" >> ")
 
@@ -63,19 +70,19 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
             else:
                 print()
                 print("!" * 31)
-                print("Veuillez faire un choix valide.")
+                print("Please, input a valid choice.")
                 print("!" * 31)
                 self.main_menu_actions['main_menu'](self)
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then! :)")
             exit()
 
     def quit(self):
         """
         Quits the app with a message.
         """
-        print("Bye bye !")
+        print("Bye bye!")
         exit()
 
     def download_file(self):
@@ -84,13 +91,12 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
         to get a file to work with.
         """
         print()
-        print("""Souhaitez-vous télécharger le fichier CSV \
-d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
-(Choisissez N si vous avez déjà téléchargé le fichier.)""")
+        print("""Would you like to download OpenFoodFacts CSV file? (y/n).\
+This may take several minutes, depending on your connection.""")
         dl_answer = input(" >> ")
 
         try:
-            if dl_answer.lower() == "o":
+            if dl_answer.lower() == "y":
 
                 # download the csv file
                 dl_file = TqdmDL()
@@ -105,12 +111,12 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
 
             else:
                 print()
-                print("Veuillez entrer une réponse valide.")
+                print("Please input a valid input.")
                 print()
                 self.main_menu_actions["1"](self)
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors!")
+            print("See you, then!")
 
     def clean_file(self):
         # clean the csv file
@@ -126,8 +132,8 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
         except FileNotFoundError as fnferr:
             print()
             print("!" * 63)
-            print("Le fichier n'a pas été trouvé.\
-\nVoici le message original :\n\n", colored("{}".format(fnferr), "red"))
+            print("File was not found.\
+\nHere is the original message:\n\n", colored("{}".format(fnferr), "red"))
             print("!" * 63)
             print()
             self.main_menu_actions['main_menu'](self)
@@ -140,21 +146,21 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
         """
         if os.path.exists("../" + CFG_FNAME):
             print("-" * 50)
-            print("Voici vos informations actuelles :")
+            print("Your actual credentials:")
             config.read("../" + CFG_FNAME)
             print(
-                "Nom d'utilisateur :",
+                "User:",
                 config["MySQL"]["user"],
                 " /",
-                "Mot de passe :",
+                "Password:",
                 config["MySQL"]["password"]
             )
             print()
-            print("Quelles informations souhaitez-vous modifier ?")
+            print("What credential would you like to edit?")
             print("=" * 50)
-            print("1 - Modifier nom d'utilisateur.")
-            print("2 - Modifier mot de passe.")
-            print("0 - Retour au menu principal.")
+            print("1 - Edit username.")
+            print("2 - Edit password.")
+            print("0 - Back to main menu.")
             print("=" * 50)
 
             try:
@@ -162,13 +168,13 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
 
                 if answer == "1":
                     username = input(
-                        "Tapez votre nouveau nom d'utilisateur : "
+                        "Input your new username: "
                     )
                     self.credentials_menu_actions[answer](self, username)
 
                 elif answer == "2":
                     password = input(
-                        "Tapez votre nouveau mot de passe : "
+                        "Input your new password: "
                     )
                     self.credentials_menu_actions[answer](self, password)
 
@@ -178,21 +184,21 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
                 else:
                     print()
                     print("!" * 31)
-                    print("Veuillez faire un choix valide.")
+                    print("Please, input a valid choice.")
                     print("!" * 31)
                     self.credentials_menu_actions['credentials_menu'](self)
 
             except KeyboardInterrupt as keyinter:
-                print("Au revoir, alors ! :)")
+                print("See you, then! :)")
                 exit()
 
         else:
-            print("Création du fichier de configuration.")
+            print("Creating .ini config file.")
             user, pwd = "", ""
             while user == "":
-                user = input("Saisissez votre nom d'utilisateur MySQL: ")
+                user = input("Please input your MySQL username: ")
             while pwd == "":
-                pwd = input("Saisissez votre mot de passe MySQL: ")
+                pwd = input("Please input your MySQL password: ")
             config_write("../" + CFG_FNAME, user, pwd)
             self.credentials_menu_actions["credentials_menu"](self)
 
@@ -240,18 +246,19 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
                 Creates the db using a mysql injector in python.
                 """
                 cursor = connection.cursor()
-                create_db_query = "CREATE DATABASE " + config["MySQL"]["db"] + " CHARACTER SET 'utf8'"
+                create_db_query = "CREATE DATABASE " + config["MySQL"]["db"]
+                + " CHARACTER SET 'utf8'"
 
                 cursor.execute(create_db_query)
 
                 print()
-                print(colored("Base de données créée !", "green"))
+                print(colored("Database created!", "green"))
                 print()
 
             except Exception as e:
 
                 print(
-                    "Une exception s'est produite : \n",
+                    "An exception occured: \n",
                     colored("{}".format(e), "red")
                 )
                 self.main_menu_actions['main_menu'](self)
@@ -271,16 +278,16 @@ d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
                         Productsstores,
                     ]
                 )
-                print(colored("Tables créées !", "green"))
+                print(colored("Tables created!", "green"))
                 print()
                 self.main_menu_actions['main_menu'](self)
 
         except pymysql.err.OperationalError as operr:
             print()
             print("!" * 83)
-            print("Veuillez renseigner des identifiants corrects \
-ou lancer MySQL sur votre ordinateur.\
-\nVoici le message original :\n\n", colored("{}".format(operr), "red"))
+            print("Please, input valid informations \
+or make sure MySQL is running on your computer.\
+\nHere is the original message:\n\n", colored("{}".format(operr), "red"))
             print("!" * 83)
             print()
             self.main_menu_actions['main_menu'](self)
@@ -288,9 +295,8 @@ ou lancer MySQL sur votre ordinateur.\
         except KeyError as kerr:
             print()
             print("!" * 83)
-            print("Il semblerait qu'une information manque au sein du fichier\
-de configuration mysql_config.ini.\
-\nVoici le message original :\n\n", colored("{}".format(kerr), "red"))
+            print("There seems to be a missing info in your mysql_config.ini.\
+\nHere is the original message:\n\n", colored("{}".format(kerr), "red"))
             print("!" * 83)
             print()
             self.main_menu_actions['main_menu'](self)
@@ -300,7 +306,7 @@ de configuration mysql_config.ini.\
         Populates the db from a csv file.
         """
         print()
-        print("Remplissage de la base de données...")
+        print("Filling database...")
         try:
             dbf = DBFeed(file, HEADERS_LIST)
             dbf.fill_categories("main_category_fr")
@@ -309,21 +315,20 @@ de configuration mysql_config.ini.\
             dbf.fill_products()
 
             print()
-            print("Base de données remplie ! Vous pouvez maintenant utiliser \
-menu.py pour utiliser l'application.")
+            print("Database filled ! You can now use menu.py to use the app.")
             print()
             self.main_menu_actions['main_menu'](self)
 
         except peewee.OperationalError as operr:
             print()
-            print("Une erreur s'est produite :\
+            print("An error occured:\
 \n\n", colored("{}".format(operr), "red"))
             print()
             self.main_menu_actions['main_menu'](self)
 
         except FileNotFoundError as fnferr:
             print()
-            print("Il semblerait que le fichier " + file + " n'existe pas :\
+            print("The file " + file + " seems to be missing:\
 \n\n", colored("{}".format(fnferr), "red"))
             print()
             self.main_menu_actions['main_menu'](self)

@@ -19,8 +19,8 @@ class Menu():
         print("-" * 56)
         print("*" * 56)
         print(
-            """Bienvenue ! Cette application vous propose
-de remplacer un produit par un autre plus "healthy" ;) !""".upper()
+            """Welcome ! This app was tailored to search through the
+OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         )
         print("*" * 56)
         print("-" * 56)
@@ -33,13 +33,13 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         """
         print()
         print("=" * 50)
-        print("Menu principal".upper().center(50))
+        print("Main menu".upper().center(50))
         print("=" * 50)
-        print("1 - Lister les catégories d'aliments à substituer.")
-        print("2 - Retrouver mes aliments substitués.")
-        print("0 - Quitter l'application.")
+        print("1 - List available categories.")
+        print("2 - See my favorites substitutes.")
+        print("0 - Quit.")
         print()
-        print("Saisissez votre choix : ")
+        print("Input your choice: ")
         try:
             answer = input(" >> ")
 
@@ -49,12 +49,12 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             else:
                 print()
                 print("!" * 31)
-                print("Veuillez faire un choix valide.")
+                print("Please, make a valid choice.")
                 print("!" * 31)
                 self.menu_actions['main_menu'](self)
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then ! :)")
             exit()
 
     def quit(self):
@@ -69,14 +69,14 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         """
 
         # creating the header of the categories table
-        categories_data = [["id", "Catégorie"]]
+        categories_data = [["id", "category"]]
 
         # creating an AsciiTable object from terminatables,
         # using categories_data
         categories_table = AsciiTable(categories_data)
 
         print()
-        print("Voici toutes les catégories, veuillez en choisir une : ")
+        print("Here are the available categories, choose one: ")
         try:
             select_categories = Categories.select().order_by(Categories.id)
             categories_ids = []
@@ -95,26 +95,26 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     self.display_products(cat_choice, 1, 10, None)
                 else:
                     print("!" * 36)
-                    print("Veuillez entrer une catégorie valide.")
+                    print("Please, input a valid category.")
                     print("!" * 36)
                     self.display_categories()
 
             except ValueError as VE:
                 print()
                 print("!" * 26)
-                print("Veuillez entrer un nombre.")
+                print("Please input an integer.")
                 print("!" * 26)
                 self.display_categories()
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then ! :)")
             exit()
 
         except InternalError as peweeie:
             print()
             print("!" * 83)
-            print("Un problème est survenu.\
-\nVoici le message original :\n\n", colored("{}".format(peweeie), "red"))
+            print("A problem occured.\
+\nHere's the original message :\n\n", colored("{}".format(peweeie), "red"))
             print("!" * 83)
             print()
             self.menu_actions['main_menu'](self)
@@ -125,15 +125,15 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         cat_choice is the category selected by the user.
         """
         # creating the header of the categories table
-        products_data = [["id", "Produit", "Nutri grade"]]
+        products_data = [["id", "Product", "Nutri grade"]]
 
         # creating an AsciiTable object from terminatables,
         # using products_data
         products_table = AsciiTable(products_data)
 
         print()
-        print("Voici les produits, veuillez en choisir un : ")
-        print("Page suivante (n), page précédente (p)")
+        print("Here are the products, choose one : ")
+        print("Next page (n), Previous page (p)")
         try:
             query = Products.select().where(
                 Products.cat_id == cat_choice
@@ -184,7 +184,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                         self.display_better_product(prod_choice)
                     else:
                         print("!" * 36)
-                        print("Veuillez entrer un produit valide.")
+                        print("Please, input a valid product.")
                         print("!" * 36)
                         self.display_products(
                             cat_choice,
@@ -194,13 +194,13 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                         )
 
                 except KeyboardInterrupt as keyinter:
-                    print("Au revoir, alors ! :)")
+                    print("See you, then ! :)")
                     exit()
 
                 except ValueError as VE:
                     print()
                     print("!" * 36)
-                    print("Veuillez entrer un nombre ou (n/p).")
+                    print("Please, input a number or (n/p).")
                     print("!" * 36)
                     self.display_products(
                         cat_choice,
@@ -210,14 +210,14 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
                     )
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then ! :)")
             exit()
 
         except InternalError as pie:
             print()
             print("!" * 83)
-            print("Un problème est survenu.\
-\nVoici le message original :\n\n", colored("{}".format(pie), "red"))
+            print("A problem occured.\
+\nHere's the original message :\n\n", colored("{}".format(pie), "red"))
             print("!" * 83)
             print()
             self.menu_actions['main_menu'](self)
@@ -236,8 +236,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             [
                 "Nom",
                 "Nutri grade",
-                "Marques",
-                "Magasin",
+                "Brand(s)",
+                "Store(s)",
                 "URL",
             ]
         ]
@@ -267,7 +267,7 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             sub_brands = self.select_brands(substitute, "id")
             sub_stores = self.select_stores(substitute, "id")
             print()
-            print("Voici le substitut proposé :")
+            print("Here's the suggested replacement:")
             print("-" * 28)
             substitute_data.append([
                 substitute.name,
@@ -286,15 +286,15 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         Tries to add a favorite to the Favorites table.
         The user can disagree and then it goes back to the main menu.
         """
-        print("Voulez-vous l'enregistrer ? (o/n)")
+        print("Would you like to save it to your favorites? (y/n)")
 
         save_fav = input(" >> ")
 
-        while save_fav not in ["o".lower(), "n".lower()]:
-            print('Veuillez entrer "o" ou "n"')
+        while save_fav not in ["y".lower(), "n".lower()]:
+            print('Please input "y" or "n"')
             save_fav = input(" >> ")
 
-        if save_fav.lower() == "o":
+        if save_fav.lower() == "y":
             Favorites.create(
                 product_id=cur_product.id,
                 substitute_id=substitute.id,
@@ -302,12 +302,12 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
 
             print()
             print(
-                "Substitut enregistré dans vos favoris ! Retour au menu."
+                "Replacement saved in your favorites ! Back to main menu."
             )
             self.menu_actions['main_menu'](self)
 
         elif save_fav.lower() == "n":
-            print("Substitut non enregistré, retour au menu.")
+            print("Replacement ignored. Back to main menu.")
             self.menu_actions['main_menu'](self)
 
     def select_stores(self, product, product_id):
@@ -344,23 +344,23 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
             product_data = [
                 [
                     'id',
-                    colored('Produit substitué', 'red'),
-                    colored('Marque(s)', 'yellow'),
-                    colored('Magasin(s)', 'yellow'),
-                    colored('Substituant', 'green'),
-                    colored('Marque(s)', 'yellow'),
-                    colored('Magasin(s)', 'yellow'),
+                    colored('Original product', 'red'),
+                    colored('Brand(s)', 'yellow'),
+                    colored('Store(s)', 'yellow'),
+                    colored('Replacement', 'green'),
+                    colored('Brand(s)', 'yellow'),
+                    colored('Store(s)', 'yellow'),
                 ]
             ]
 
             product_table = AsciiTable(product_data)
 
             if count_favs == 0:
-                print("Vous n'avez pas encore enregistré de favoris.")
+                print("You did not save any favorite yet.")
             else:
                 print()
-                print("Vous avez", count_favs, "favori(s).")
-                print("Les voici :")
+                print("You have", count_favs, "favorite(s).")
+                print("Here they are :")
                 print("-" * 30)
 
                 favorites_ids = []
@@ -434,8 +434,8 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         except pymysql.err.InternalError as pymysqlie:
             print()
             print("!" * 83)
-            print("Un problème est survenu.\
-\nVoici le message original :\n\n", colored("{}".format(pymysqlie), "red"))
+            print("A problem occured.\
+\nHere's the original message :\n\n", colored("{}".format(pymysqlie), "red"))
             print("!" * 83)
             print()
             self.menu_actions['main_menu'](self)
@@ -443,27 +443,27 @@ de remplacer un produit par un autre plus "healthy" ;) !""".upper()
         except InternalError as peweeie:
             print()
             print("!" * 83)
-            print("Un problème est survenu.\
-\nVoici le message original :\n\n", colored("{}".format(peweeie), "red"))
+            print("A problem occured.\
+\nHere's the original message :\n\n", colored("{}".format(peweeie), "red"))
             print("!" * 83)
             print()
             self.menu_actions['main_menu'](self)
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then ! :)")
             exit()
 
     def edit_favs(self, favorites_ids):
         print()
         print(
-            "Choisissez un favori à supprimer ou (m) \
-pour retourner au menu principal."
+            "Please choose a favorite to delete or (m) \
+to go back to main menu."
         )
         edit_fav_choice = input(" >> ")
 
         try:
             if edit_fav_choice.lower() == "m":
-                print("Retour au menu principal.")
+                print("Back to main menu.")
                 self.menu_actions['main_menu'](self)
 
             else:
@@ -473,59 +473,59 @@ pour retourner au menu principal."
                         self.remove_favs(edit_fav_choice, favorites_ids)
                     else:
                         print("!" * 36)
-                        print("Veuillez entrer un favori valide.")
+                        print("Please input a valid favorite.")
                         print("!" * 36)
                         self.edit_favs(favorites_ids)
 
                 except KeyboardInterrupt as keyinter:
-                        print("Au revoir, alors ! :)")
+                        print("See you, then ! :)")
                         exit()
 
                 except ValueError as VE:
                     print()
                     print("!" * 36)
-                    print("Veuillez entrer un nombre ou (n).")
+                    print("Please input a number or (n).")
                     print("!" * 36)
                     self.edit_favs(favorites_ids)
 
         except KeyboardInterrupt as keyinter:
-            print("Au revoir, alors ! :)")
+            print("See you, then ! :)")
             exit()
 
     def remove_favs(self, edit_fav_choice, favorites_ids):
         """
         Removing favorites from the Favorites table.
         """
-        print("Êtes-vous sûr ? (o/n)")
+        print("Do you really want to delete this favorite? (y/n)")
         remove_fav = input(" >> ")
 
-        while remove_fav not in ["o".lower(), "n".lower()]:
-            print('Veuillez entrer "o" ou "n"')
+        while remove_fav not in ["y".lower(), "n".lower()]:
+            print('Veuillez entrer "y" ou "n"')
             remove_fav = input(" >> ")
         try:
             edit_fav_choice = int(edit_fav_choice)
-            if remove_fav.lower() == "o":
+            if remove_fav.lower() == "y":
                 favorite = Favorites.get(Favorites.id == edit_fav_choice)
                 favorite.delete_instance()
                 print()
                 print("/" * 17)
-                print("Favori supprimé !")
+                print("Favorite deleted !")
                 print("/" * 17)
             else:
                 print()
                 print("!" * 18)
-                print("Opération annulée.")
+                print("Canceled operation.")
                 print("!" * 18)
                 self.display_favs()
 
         except KeyboardInterrupt as keyinter:
-                print("Au revoir, alors ! :)")
+                print("See you, then ! :)")
                 exit()
 
         except ValueError as VE:
             print()
             print("!" * 36)
-            print("Veuillez entrer un nombre ou (n).")
+            print("Please input a number or (n).")
             print("!" * 36)
             self.edit_favs(favorites_ids)
 
@@ -553,7 +553,7 @@ pour retourner au menu principal."
 
         else:
             print()
-            print("Vous êtes à la dernière page ;).")
+            print("This is the last page ;).")
             query = self.display_products(
                 cat_choice,
                 page,
@@ -584,7 +584,7 @@ pour retourner au menu principal."
             )
         else:
             print()
-            print("Vous êtes à la première page ;).")
+            print("This is the first page ;).")
             query = self.display_products(
                 cat_choice,
                 page,
