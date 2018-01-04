@@ -33,7 +33,7 @@ class CSVCleaner():
             csv_file = pd.read_csv(
                 fname,
                 sep="\t",
-                encoding="utf-16",
+                encoding="utf-8",
                 low_memory=False,
                 thousands=',',
             )
