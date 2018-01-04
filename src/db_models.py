@@ -37,95 +37,96 @@ class BaseModel(Model):
         database = openfoodfacts_db
 
 
-class Brands(BaseModel):
+class Brand(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'brands'
+        db_table = 'brand'
 
 
-class Categories(BaseModel):
+class Category(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'categories'
+        db_table = 'category'
 
 
-class Stores(BaseModel):
+class Store(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'stores'
+        db_table = 'store'
 
 
-class Products(BaseModel):
-    carbs = FloatField(null=True)
-    cat = ForeignKeyField(
-        db_column='cat_id', rel_model=Categories, to_field='id'
-    )
+class Product(BaseModel):
     code = BigIntegerField()
-    energy = IntegerField(null=True)
-    fat = FloatField(null=True)
-    fibers = FloatField(null=True)
+    url = CharField(null=False, unique=True)
     name = CharField()
     nutri_grade = CharField(null=True)
-    proteins = FloatField(null=True)
-    salt = FloatField(null=True)
-    sugars = FloatField(null=True)
-    url = CharField(null=True)
+    cat = ForeignKeyField(
+        db_column='cat_id', rel_model=Category, to_field='id'
+    )
+    energy = IntegerField(null=True)
+    fat = DoubleField(null=True)
+    carbs = DoubleField(null=True)
+    sugars = DoubleField(null=True)
+    fibers = DoubleField(null=True)
+    proteins = DoubleField(null=True)
+    salt = DoubleField(null=True)
+    last_modified_t = IntegerField(null=False)
 
     class Meta:
-        db_table = 'products'
+        db_table = 'product'
 
 
-class Favorites(BaseModel):
+class Favorite(BaseModel):
     product = ForeignKeyField(
         db_column='product_id',
-        rel_model=Products,
+        rel_model=Product,
         to_field='id'
     )
     substitute = ForeignKeyField(
         db_column='substitute_id',
-        rel_model=Products,
+        rel_model=Product,
         related_name='products_substitute_set',
         to_field='id'
     )
 
     class Meta:
-        db_table = 'favorites'
+        db_table = 'favorite'
 
 
-class Productsbrands(BaseModel):
-    brands = ForeignKeyField(
-        db_column='Brands_id',
-        rel_model=Brands,
+class Productbrand(BaseModel):
+    brand = ForeignKeyField(
+        db_column='brand_id',
+        rel_model=Brand,
         to_field='id'
     )
-    products = ForeignKeyField(
-        db_column='Products_id',
-        rel_model=Products,
+    product = ForeignKeyField(
+        db_column='product_id',
+        rel_model=Product,
         to_field='id'
     )
 
     class Meta:
-        db_table = 'productsbrands'
+        db_table = 'productbrand'
         indexes = (
-            (('brands', 'products'), True),
+            (('brand', 'product'), True),
         )
-        primary_key = CompositeKey('brands', 'products')
+        primary_key = CompositeKey('brand', 'product')
 
 
-class Productsstores(BaseModel):
-    products = ForeignKeyField(
-        db_column='Products_id', rel_model=Products, to_field='id'
+class Productstore(BaseModel):
+    product = ForeignKeyField(
+        db_column='product_id', rel_model=Product, to_field='id'
     )
-    stores = ForeignKeyField(
-        db_column='Stores_id', rel_model=Stores, to_field='id'
+    store = ForeignKeyField(
+        db_column='store_id', rel_model=Store, to_field='id'
     )
 
     class Meta:
-        db_table = 'productsstores'
+        db_table = 'productstore'
         indexes = (
-            (('products', 'stores'), True),
+            (('product', 'store'), True),
         )
-        primary_key = CompositeKey('products', 'stores')
+        primary_key = CompositeKey('product', 'store')

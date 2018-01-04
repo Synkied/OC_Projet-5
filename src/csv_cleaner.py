@@ -10,6 +10,8 @@ from constants import *
 class CSVCleaner():
 
     def __init__(self, file_name):
+        # disable SettingWithCopyWarning
+        pd.options.mode.chained_assignment = None  # default='warn'
         self.file_name = file_name
 
     def csv_cleaner(self, headers, categories=[], countries=[]):
@@ -22,7 +24,7 @@ class CSVCleaner():
         """
         fname = self.file_name
 
-        print("Nettoyage du fichier CSV en cours...")
+        print("Cleaning CSV file... Please wait...")
 
         # reads the specified file.
         # sep: csv file's separator
@@ -58,6 +60,9 @@ class CSVCleaner():
             df['countries_fr'].isin(countries) & df['product_name'].notnull() &
             df['nutrition_grade_fr'].notnull()
         ]
+
+        # set nutri_grade to lower case, just in case
+        new_f['nutrition_grade_fr'] = new_f['nutrition_grade_fr'].str.lower()
 
         # save the new file to a csv file, with the name "db_file.csv"
         new_f.to_csv(

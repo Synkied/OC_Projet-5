@@ -3,6 +3,7 @@
 # csv constants
 CSV_URL = "https://world.openfoodfacts.org/data/fr.openfoodfacts.org.products.csv"
 CSV_FNAME = 'fr.openfoodfacts.org.products.csv'
+CLEANED_CSV_FILE = "db_file.csv"
 
 # config files constants
 CFG_FNAME = "mysql_config.ini"
@@ -23,6 +24,7 @@ HEADERS_LIST = [
     "fiber_100g",
     "proteins_100g",
     "salt_100g",
+    "last_modified_t",
 ]
 
 CATEGORIES_LIST = [

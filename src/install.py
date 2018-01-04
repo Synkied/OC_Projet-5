@@ -58,6 +58,7 @@ through the installation of OpenFoodFacts DB Seeker !""".upper()
         print("3 - Input your personal MySQL credentials.")
         print("4 - Create MySQL database.")
         print("5 - Populate MySQL database.")
+        print("6 - Update MySQL database from CSV file.")
         print("0 - Quit.")
         print()
         print("Input your choice: ")
@@ -91,7 +92,7 @@ through the installation of OpenFoodFacts DB Seeker !""".upper()
         to get a file to work with.
         """
         print()
-        print("""Would you like to download OpenFoodFacts CSV file? (y/n).\
+        print("""Would you like to download OpenFoodFacts CSV file? (y/n). \
 This may take several minutes, depending on your connection.""")
         dl_answer = input(" >> ")
 
@@ -128,6 +129,9 @@ This may take several minutes, depending on your connection.""")
                 CATEGORIES_LIST,
                 COUNTRIES_LIST,
             )
+            print()
+            print(colored("File cleaned!", "green"))
+            print()
             self.main_menu_actions['main_menu'](self)
 
         except FileNotFoundError as fnferr:
@@ -258,6 +262,7 @@ This may take several minutes, depending on your connection.""")
                 print()
                 print(colored("Database created!", "green"))
                 print()
+                connection.close()  # close pymysql connection
 
             except Exception as e:
 
@@ -268,22 +273,22 @@ This may take several minutes, depending on your connection.""")
                 self.main_menu_actions['main_menu'](self)
 
             else:
-                connection.close()  # close pymysql connection
 
                 openfoodfacts_db.connect()  # open peewee connection
                 openfoodfacts_db.create_tables(
                     [
-                        Brands,
-                        Categories,
-                        Stores,
-                        Products,
-                        Favorites,
-                        Productsbrands,
-                        Productsstores,
+                        Brand,
+                        Category,
+                        Store,
+                        Product,
+                        Favorite,
+                        Productbrand,
+                        Productstore,
                     ]
                 )
                 print(colored("Tables created!", "green"))
                 print()
+                openfoodfacts_db.close()  # close peewee connection
                 self.main_menu_actions['main_menu'](self)
 
         except pymysql.err.OperationalError as operr:
@@ -296,14 +301,14 @@ or make sure MySQL is running on your computer.\
             print()
             self.main_menu_actions['main_menu'](self)
 
-        except KeyError as kerr:
-            print()
-            print("!" * 83)
-            print("There seems to be a missing info in your mysql_config.ini.\
-\nHere is the original message:\n\n", colored("{}".format(kerr), "red"))
-            print("!" * 83)
-            print()
-            self.main_menu_actions['main_menu'](self)
+#         except KeyError as kerr:
+#             print()
+#             print("!" * 83)
+#             print("There seems to be a missing info in your mysql_config.ini.\
+# \nHere is the original message:\n\n", colored("{}".format(kerr), "red"))
+#             print("!" * 83)
+#             print()
+#             self.main_menu_actions['main_menu'](self)
 
     def populate_db(self):
         """
@@ -312,21 +317,24 @@ or make sure MySQL is running on your computer.\
         print()
         print("Filling database... Please wait...")
         try:
-            dbf = DBFeed(file, HEADERS_LIST)
+            dbf = DBFeed("../" + CLEANED_CSV_FILE, HEADERS_LIST)
             dbf.fill_categories("main_category_fr")
             dbf.fill_stores("stores")
             dbf.fill_brands("brands")
             dbf.fill_products()
 
             print()
-            print("Database filled ! You can now use menu.py to use the app.")
+            print(colored(
+                "Database filled! You can now use menu.py to use the app.",
+                "green")
+            )
             print()
             self.main_menu_actions['main_menu'](self)
 
-        except peewee.OperationalError as operr:
+        except peewee.OperationalError as peeweeoperr:
             print()
             print("An error occured:\
-\n\n", colored("{}".format(operr), "red"))
+\n\n", colored("{}".format(peeweeoperr), "red"))
             print()
             self.main_menu_actions['main_menu'](self)
 
@@ -334,6 +342,52 @@ or make sure MySQL is running on your computer.\
             print()
             print("The file " + file + " seems to be missing:\
 \n\n", colored("{}".format(fnferr), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except peewee.InternalError as peeweeie:
+            print()
+            print("An error occured:\
+\n\n", colored("{}".format(peeweeie), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+    def update_db_from_csv(self):
+        """
+        Populates the db from a csv file.
+        """
+        print()
+        print("Updating database... Please wait...")
+        try:
+            dbf = DBFeed("../" + CLEANED_CSV_FILE, HEADERS_LIST)
+            dbf.update_products()
+
+            print()
+            print(colored(
+                "Database updated! You can now use menu.py to use the app.",
+                "green")
+            )
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except peewee.OperationalError as peeweeoperr:
+            print()
+            print("An error occured:\
+\n\n", colored("{}".format(peeweeoperr), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except FileNotFoundError as fnferr:
+            print()
+            print("The file " + file + " seems to be missing:\
+\n\n", colored("{}".format(fnferr), "red"))
+            print()
+            self.main_menu_actions['main_menu'](self)
+
+        except peewee.InternalError as peeweeie:
+            print()
+            print("An error occured:\
+\n\n", colored("{}".format(peeweeie), "red"))
             print()
             self.main_menu_actions['main_menu'](self)
 
@@ -347,6 +401,7 @@ or make sure MySQL is running on your computer.\
         '3': get_or_change_credentials,
         '4': create_db,
         '5': populate_db,
+        '6': update_db_from_csv,
         '0': quit,
     }
 

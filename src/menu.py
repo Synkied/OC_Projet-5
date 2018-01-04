@@ -78,7 +78,7 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         print()
         print("Here are the available categories, choose one: ")
         try:
-            select_categories = Categories.select().order_by(Categories.id)
+            select_categories = Category.select().order_by(Category.id)
             categories_ids = []
             for category in select_categories:
                 # put all categories ids in a list to iterate over...
@@ -135,10 +135,10 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         print("Here are the products, choose one : ")
         print("Next page (n), Previous page (p)")
         try:
-            query = Products.select().where(
-                Products.cat_id == cat_choice
+            query = Product.select().where(
+                Product.cat_id == cat_choice
             ).order_by(
-                Products.id
+                Product.id
             )
 
             # query pagination
@@ -234,7 +234,7 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         # header for the substitute table
         substitute_data = [
             [
-                "Nom",
+                "Name",
                 "Nutri grade",
                 "Brand(s)",
                 "Store(s)",
@@ -242,26 +242,28 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
             ]
         ]
 
-        # transforms the substitute_data to a table
+        # transforms the substitute_data list to a table
         substitute_table = AsciiTable(substitute_data)
 
-        cur_product = Products.get(
-            Products.id == prod_choice
+        cur_product = Product.get(
+            Product.id == prod_choice
         )
 
-        substitute_query = Products.select().where(
-            Products.nutri_grade <= cur_product.nutri_grade,
-            Products.cat_id == cur_product.cat_id).order_by(
-            fn.Rand()
-        ).limit(1)
+        # if nutri_grade is a, give a similarly graded product
+        if cur_product.nutri_grade == "a":
+            substitute_query = Product.select().where(
+                Product.nutri_grade == cur_product.nutri_grade,
+                Product.cat_id == cur_product.cat_id).order_by(
+                fn.Rand()
+            ).limit(1)
 
-        # ... else give a product with a better nutrigrade
-        # else:
-        #     substitute_query = Products.select().where(
-        #         Products.nutri_grade < cur_product.nutri_grade,
-        #         Products.cat_id == cur_product.cat_id).order_by(
-        #         fn.Rand()
-        #     ).limit(1)
+        # else give a product with a better nutrigrade
+        else:
+            substitute_query = Product.select().where(
+                Product.nutri_grade < cur_product.nutri_grade,
+                Product.cat_id == cur_product.cat_id).order_by(
+                fn.Rand()
+            ).limit(1)
 
         for substitute in substitute_query:
             sub_brands = self.select_brands(substitute, "id")
@@ -295,7 +297,7 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
             save_fav = input(" >> ")
 
         if save_fav.lower() == "y":
-            Favorites.create(
+            Favorite.create(
                 product_id=cur_product.id,
                 substitute_id=substitute.id,
             )
@@ -314,9 +316,9 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         """
         Query to select stores from many to many table
         """
-        stores = (Stores.select().join(Productsstores).join(
-            Products
-        ).where(Products.id == getattr(product, product_id)))
+        stores = (Store.select().join(Productstore).join(
+            Product
+        ).where(Product.id == getattr(product, product_id)))
 
         return stores
 
@@ -324,9 +326,9 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         """
         Query to select brands from many to many table
         """
-        brands = (Brands.select().join(Productsbrands).join(
-            Products
-        ).where(Products.id == getattr(product, product_id)))
+        brands = (Brand.select().join(Productbrand).join(
+            Product
+        ).where(Product.id == getattr(product, product_id)))
 
         return brands
 
@@ -338,8 +340,8 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
         """
 
         try:
-            favorites = Favorites.select()
-            count_favs = Favorites.select().count()
+            favorites = Favorite.select()
+            count_favs = Favorite.select().count()
 
             product_data = [
                 [
@@ -356,23 +358,26 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
             product_table = AsciiTable(product_data)
 
             if count_favs == 0:
-                print("You did not save any favorite yet.")
+                print("You did not save any favorite yet. Back to main menu.")
+                print()
+                self.menu_actions['main_menu'](self)
             else:
                 print()
                 print("You have", count_favs, "favorite(s).")
                 print("Here they are :")
                 print("-" * 30)
 
+                # list of ids being displayed
                 favorites_ids = []
 
                 for favorite in favorites:
                     favorites_ids.append(favorite.id)
 
-                    substitutes = Products.select().where(
-                        Products.id == favorite.substitute_id
+                    substitutes = Product.select().where(
+                        Product.id == favorite.substitute_id
                     )
-                    products = Products.select().where(
-                        Products.id == favorite.product_id
+                    products = Product.select().where(
+                        Product.id == favorite.product_id
                     )
 
                     # get the brands and stores of the substitutes
@@ -454,6 +459,11 @@ OpenFoodFacts website and suggest you healthier products ;) !""".upper()
             exit()
 
     def edit_favs(self, favorites_ids):
+        """
+        Editing favorites.
+        favorites_ids is a list of int of the favorites being displayed
+        in the terminal
+        """
         print()
         print(
             "Please choose a favorite to delete or (m) \
@@ -494,7 +504,7 @@ to go back to main menu."
 
     def remove_favs(self, edit_fav_choice, favorites_ids):
         """
-        Removing favorites from the Favorites table.
+        Removing favorites from the Favorite table.
         """
         print("Do you really want to delete this favorite? (y/n)")
         remove_fav = input(" >> ")
@@ -505,7 +515,7 @@ to go back to main menu."
         try:
             edit_fav_choice = int(edit_fav_choice)
             if remove_fav.lower() == "y":
-                favorite = Favorites.get(Favorites.id == edit_fav_choice)
+                favorite = Favorite.get(Favorite.id == edit_fav_choice)
                 favorite.delete_instance()
                 print()
                 print("/" * 17)
@@ -530,9 +540,6 @@ to go back to main menu."
             self.edit_favs(favorites_ids)
 
         self.display_favs()
-
-    def ask_oui_non(self):
-        pass
 
     def next_page(self, cat_choice, page, products_p_page, n_of_pages):
         """

@@ -111,3 +111,35 @@ import pandas as pd
 # t = pd.read_csv("../fr.openfoodfacts.org.products.csv", encoding="utf-16", sep="\t", nrows=4)
 
 # print(t)
+
+# def update_products(self):
+#         """
+#         Fills Products table with specified
+#         """
+#         today = datetime.today()
+#         products_dict = csv_to_dict(self.file_name, self.headers)
+
+#         for product in products_dict:
+#             product_from_db = Products.get(url=product["url"])
+
+#             query = Products.update(
+#                 code=product["code"],
+#                 url=product["url"],  # unique
+#                 name=product["product_name"],
+#                 nutri_grade=product["nutrition_grade_fr"],
+#                 cat=Categories.get(
+#                     Categories.name == product["main_category_fr"]
+#                 ).id,
+#                 energy=product["energy_100g"],
+#                 fat=product["fat_100g"],
+#                 carbs=product["carbohydrates_100g"],
+#                 sugars=product["sugars_100g"],
+#                 fibers=product["fiber_100g"],
+#                 proteins=product["proteins_100g"],
+#                 salt=product["salt_100g"],
+#                 last_modified_t=product["last_modified_t"],
+#             ).where(datetime.fromtimestamp(product["last_modified_t"]) > datetime.fromtimestamp(product_from_db.last_modified_t))
+
+#             print("from_csv", datetime.fromtimestamp(product["last_modified_t"]), "from_db", datetime.fromtimestamp(product_from_db.last_modified_t))
+
+#             query.execute()

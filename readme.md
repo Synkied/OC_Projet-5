@@ -60,3 +60,13 @@ To stop the download from the terminal, use <kbd>CTRL</kbd>+<kbd>C</kbd>.
 
 To use the app, simply do from a terminal : ```$ python menu.py```  
 Then follow along the steps.
+
+## Known issues
+### Download progress bar
+Progress bar while downloading may sometime reset to 0%, but the file is still downloading, so don't cancel.
+
+### Number of rows updated
+Updating the database does not return the number of rows updated. Even though no rows were updated it tells the user that the db was updated.
+
+### Stores and brands
+When a store or brand is deleted from a product row, the row joining the brand/store and the product in productsbrands' table or producsstores' table is not deleted.
