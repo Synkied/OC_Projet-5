@@ -85,7 +85,7 @@ dans l'installation d'OpenFoodFacts OC !""".upper()
         """
         print()
         print("""Souhaitez-vous télécharger le fichier CSV \
-d'OpenFoodFacts ? (o/n).
+d'OpenFoodFacts ? (o/n). Cela risque de prendre plusieurs minutes.
 (Choisissez N si vous avez déjà téléchargé le fichier.)""")
         dl_answer = input(" >> ")
 

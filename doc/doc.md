@@ -1,5 +1,5 @@
 ## DataBase
-Categories:
+### Categories:
 Petit déjeuners,
 Biscuits,
 Soupes,
@@ -20,7 +20,7 @@ Chips et frites,
 
 build a script to create db and add tables automaticaly
 
-create db model from database
+### Create db model from database
 python -m pwiz -e mysql openfoodfacts_oc -u quentin -P > db_models.py
 
 What to do if the chosen product is the "best" available?
@@ -34,8 +34,7 @@ The program should be able to retrieve data from a csv (and the api?).
 3. Put each category name in the "categories" database
 4. Put stores and brands in their corresponding table
 4. Put each product in the "products" database with links to brands stores and categories
-5. todo
 
 ## User interactions
-The user enters a product name, and gets a healthier replacement displayed.
-He can fav it (maybe see another replacement?).
+The user choses a product (via a number), and gets a healthier replacement displayed.
+He can fav it.
