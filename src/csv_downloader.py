@@ -23,10 +23,10 @@ class TqdmDL(tqdm):
 
         dwnld = requests.get(url, stream=True)
 
-        # defines encoding, because not provided by OpenFoodFacts
-        # Total size in bytes.
+        # size of chunk downloaded
         chunk_size = 32 * 1024
-        total_size = (int(dwnld.headers.get('content-length', 0)))
+        # Total size in bytes.
+        total_size = int(dwnld.headers.get('content-length', 0))
 
         # write to utf-16, for foreign chars
         with open(directory + fname, 'wb') as f:

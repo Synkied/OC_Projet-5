@@ -1,7 +1,5 @@
 # coding: utf8
 
-from sys import platform as _platform
-
 import pandas as pd
 
 from constants import *
@@ -29,25 +27,13 @@ class CSVCleaner():
         # reads the specified file.
         # sep: csv file's separator
         # low_memory: avoiding unnecessary warning msgs
-        if (_platform == "linux" or
-                _platform == "linux2" or
-                _platform == "darwin"):
-            csv_file = pd.read_csv(
-                fname,
-                sep="\t",
-                encoding="utf-8",
-                low_memory=False,
-                thousands=',',
-            )
-
-        elif _platform == "win32" or _platform == "win64":
-            csv_file = pd.read_csv(
-                fname,
-                sep="\t",
-                encoding="utf-8",
-                low_memory=False,
-                thousands=',',
-            )
+        csv_file = pd.read_csv(
+            fname,
+            sep="\t",
+            encoding="utf-8",
+            low_memory=False,
+            thousands=',',
+        )
 
         # defines a dataframe, from the passed headers
         df = csv_file[headers]
@@ -57,7 +43,8 @@ class CSVCleaner():
         # drops products that have no name.
         new_f = df.loc[
             df['main_category_fr'].isin(categories) &
-            df['countries_fr'].isin(countries) & df['product_name'].notnull() &
+            df['countries_fr'].isin(countries) &
+            df['product_name'].notnull() &
             df['nutrition_grade_fr'].notnull()
         ]
 

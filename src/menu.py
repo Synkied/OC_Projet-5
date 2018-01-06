@@ -494,7 +494,7 @@ to go back to main menu."
                 except ValueError as VE:
                     print()
                     print("!" * 36)
-                    print("Please input a number or (n).")
+                    print("Please input a number or (m).")
                     print("!" * 36)
                     self.edit_favs(favorites_ids)
 
