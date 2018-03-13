@@ -6,7 +6,7 @@ CSV_FNAME = 'fr.openfoodfacts.org.products.csv'
 CLEANED_CSV_FILE = "db_file.csv"
 
 # config files constants
-CFG_FNAME = "mysql_config.ini"
+CFG_FNAME = "postgresql_config.ini"
 
 HEADERS_LIST = [
     "code",

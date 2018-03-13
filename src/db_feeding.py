@@ -1,5 +1,7 @@
 # coding: utf8
 
+import datetime
+
 import pandas as pd
 from peewee import *
 
@@ -27,7 +29,7 @@ def csv_to_df(fname, headers):
     csv_file = pd.read_csv(
         fname,
         sep=";",
-        encoding="utf-16",
+        encoding="utf-8",
         low_memory=False
     )
 
@@ -47,7 +49,7 @@ def csv_to_dict(fname, headers):
     csv_file = pd.read_csv(
         fname,
         sep=";",
-        encoding="utf-16",
+        encoding="utf-8",
         low_memory=False
     )
 
@@ -164,7 +166,7 @@ class DBFeed():
                 fibers=product["fiber_100g"],
                 proteins=product["proteins_100g"],
                 salt=product["salt_100g"],
-                last_modified_t=product["last_modified_t"],
+                last_modified_t=str(datetime.datetime.fromtimestamp(product["last_modified_t"])),
             )
 
         self.fill_productsbrands(products_dict)
@@ -184,7 +186,7 @@ class DBFeed():
                         # from Brands table
                         # where brands.name = brand
                         brand=Brand.get(
-                            Brand.name == brand
+                            Brand.name == brand.lower().capitalize()
                         ).id,
                         # select product.id
                         # from Products table
@@ -208,7 +210,7 @@ class DBFeed():
                         # from stores table
                         # where stores.name = store
                         store=Store.get(
-                            Store.name == store
+                            Store.name == store.lower().capitalize()
                         ).id,
                         # select products.id
                         # from Products table

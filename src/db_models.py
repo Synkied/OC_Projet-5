@@ -27,8 +27,8 @@ config = configparser.ConfigParser()
 config.read("../" + CFG_FNAME)
 
 
-openfoodfacts_db = MySQLDatabase(config["MySQL"]["db"], **{
-    'user': config["MySQL"]["user"], 'password': config["MySQL"]["password"]
+openfoodfacts_db = PostgresqlDatabase(config["Postgresql"]["db"], **{
+    'user': config["Postgresql"]["user"], 'password': config["Postgresql"]["password"]
 })
 
 
@@ -73,7 +73,7 @@ class Product(BaseModel):
     fibers = DoubleField(null=True)
     proteins = DoubleField(null=True)
     salt = DoubleField(null=True)
-    last_modified_t = IntegerField(null=False)
+    last_modified_t = DateTimeField(null=False)
 
     class Meta:
         db_table = 'product'

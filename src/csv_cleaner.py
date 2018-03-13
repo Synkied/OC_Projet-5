@@ -55,7 +55,7 @@ class CSVCleaner():
         new_f.to_csv(
             "../db_file.csv",
             index=False,
-            encoding="utf-16",
+            encoding="utf-8",
             sep=";",
         )
 
