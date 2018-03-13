@@ -166,7 +166,7 @@ class DBFeed():
                 fibers=product["fiber_100g"],
                 proteins=product["proteins_100g"],
                 salt=product["salt_100g"],
-                last_modified_t=str(datetime.datetime.fromtimestamp(product["last_modified_t"])),
+                last_modified_t=datetime.datetime.fromtimestamp(product["last_modified_t"]),
             )
 
         self.fill_productsbrands(products_dict)
@@ -281,11 +281,11 @@ def main():
 
     # dbf.fill_brands("brands")
 
-    # dbf.fill_products()
+    dbf.fill_products()
 
-    products_dict = csv_to_dict("../" + CLEANED_CSV_FILE, HEADERS_LIST)
-    # dbf.fill_productsstores(products_dict)
-    dbf.delete_productsstores(products_dict)
+    # products_dict = csv_to_dict("../" + CLEANED_CSV_FILE, HEADERS_LIST)
+    # # dbf.fill_productsstores(products_dict)
+    # dbf.delete_productsstores(products_dict)
 
     # dbf.update_products()
 

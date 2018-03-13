@@ -41,21 +41,21 @@ class Brand(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'brand'
+        db_table = 'store_brand'
 
 
 class Category(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'category'
+        db_table = 'store_category'
 
 
 class Store(BaseModel):
     name = CharField(unique=True)
 
     class Meta:
-        db_table = 'store'
+        db_table = 'store_store'
 
 
 class Product(BaseModel):
@@ -76,7 +76,7 @@ class Product(BaseModel):
     last_modified_t = DateTimeField(null=False)
 
     class Meta:
-        db_table = 'product'
+        db_table = 'store_product'
 
 
 class Favorite(BaseModel):
@@ -93,7 +93,7 @@ class Favorite(BaseModel):
     )
 
     class Meta:
-        db_table = 'favorite'
+        db_table = 'store_favorite'
 
 
 class Productbrand(BaseModel):
@@ -109,7 +109,7 @@ class Productbrand(BaseModel):
     )
 
     class Meta:
-        db_table = 'productbrand'
+        db_table = 'store_productbrand'
         indexes = (
             (('brand', 'product'), True),
         )
@@ -125,7 +125,7 @@ class Productstore(BaseModel):
     )
 
     class Meta:
-        db_table = 'productstore'
+        db_table = 'store_productstore'
         indexes = (
             (('product', 'store'), True),
         )
